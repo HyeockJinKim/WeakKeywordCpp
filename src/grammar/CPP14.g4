@@ -70,6 +70,7 @@ idexpression
 :
 	unqualifiedid
 	| qualifiedid
+	| Nweak idexpression
 ;
 
 unqualifiedid
@@ -174,7 +175,6 @@ postfixexpression
 	| Const_cast Less thetypeid Greater LeftParen expression RightParen
 	| Typeid LeftParen expression RightParen
 	| Typeid LeftParen thetypeid RightParen
-	| Nweak postfixexpression
 ;
 
 expressionlist
