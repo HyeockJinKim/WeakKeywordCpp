@@ -6,7 +6,7 @@ public class CppFunction {
     public String functionName;
     public ArrayList<String> functionParameter;
 
-    CppFunction() {
+    public CppFunction() {
         functionParameter = new ArrayList<>();
     }
 
