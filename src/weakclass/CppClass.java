@@ -1,20 +1,22 @@
 package weakclass;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import java.util.*;
 
 public class CppClass {
     public String className;
     public Set<CppFunction> virtualFunctionSet; // Map
-    public Map<String, StringBuilder> functionMap; // accessspecifier, function
+    public Map<String, ArrayList<ParserRuleContext>> functionMap; // accessspecifier, function
 
     public CppClass(String className) {
         this.className = className;
         this.virtualFunctionSet = new HashSet<>();
         this.functionMap = new TreeMap<>();
-        this.functionMap.put("\n",new StringBuilder());
-        this.functionMap.put("\nprivate:\n",new StringBuilder());
-        this.functionMap.put("\npublic:\n",new StringBuilder());
-        this.functionMap.put("\nprotected:\n",new StringBuilder());
+        this.functionMap.put("\n",new ArrayList<>());
+        this.functionMap.put("\nprivate:\n",new ArrayList<>());
+        this.functionMap.put("\npublic:\n",new ArrayList<>());
+        this.functionMap.put("\nprotected:\n",new ArrayList<>());
     }
 
     @Override
