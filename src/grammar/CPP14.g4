@@ -70,7 +70,7 @@ idexpression
 :
 	unqualifiedid
 	| qualifiedid
-	| Nweak idexpression
+	| Limited idexpression
 ;
 
 unqualifiedid
@@ -1543,9 +1543,9 @@ Nullptr
 	'nullptr'
 ;
 
-Nweak
+Limited
 :
-	'nweak'
+	'limited'
 ;
 
 Operator
