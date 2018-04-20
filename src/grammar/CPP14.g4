@@ -1713,11 +1713,6 @@ While
 	'while'
 ;
 
-WStatic_cast
-:
-    'wstatic_cast'
-;
-
 /*Operators*/
 LeftParen
 :
