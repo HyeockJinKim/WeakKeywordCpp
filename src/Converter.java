@@ -1,4 +1,9 @@
 
+import checker.WeakCheckVisitor;
+import grammar.antlr.CPP14Lexer;
+import grammar.antlr.CPP14Parser;
+import org.antlr.v4.runtime.*;
+
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -6,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
+
 
 public class Converter {
     private String filePath;
@@ -24,24 +30,34 @@ public class Converter {
         }
         fileName = path.getFileName().toString();
         if (!"cpp".equals(fileName.substring(fileName.length()-3, fileName.length()))) {
-            System.out.println("File format is not cpp file");
             throw new FileNotFoundException();
         }
         filePath = path.toString();
     }
 
     public Optional<String> parse() {
+        try {
+            CPP14Lexer lexer = new CPP14Lexer(new ANTLRFileStream(filePath));
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            CPP14Parser parser = new CPP14Parser(tokens);
+            ParserRuleContext tree = parser.translationunit();
 
+            WeakCheckVisitor visitor = new WeakCheckVisitor(tokens);
+            visitor.visit(tree);
+            return Optional.ofNullable(visitor.getFullText());
+        } catch (IOException e) {
+            System.out.println("File Input is not correct");
+        }
         return Optional.empty();
     }
-// web kit
+
     public void writeCppFile(String text) {
         try {
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(Paths.get(folderPath, "_"+fileName).toString()));
             bufferedWriter.write(text);
             bufferedWriter.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Write failed");
         }
     }
 }
