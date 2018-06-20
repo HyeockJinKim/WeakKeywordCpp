@@ -21,6 +21,7 @@ public class WeakCheckVisitor<T> extends CPP14BaseVisitor<T> {
     private String currentAccessSpecifier;
     private boolean isParam;
     private boolean isVirtual;
+    private boolean isBaseClause;
 
     public WeakCheckVisitor(CommonTokenStream tokens) {
         super();
@@ -74,6 +75,23 @@ public class WeakCheckVisitor<T> extends CPP14BaseVisitor<T> {
     }
 
     @Override
+    public T visitBaseclause(CPP14Parser.BaseclauseContext ctx) {
+        isBaseClause = true;
+        T result =  super.visitBaseclause(ctx);
+        isBaseClause = false;
+        return result;
+    }
+
+    @Override
+    public T visitBasespecifier(CPP14Parser.BasespecifierContext ctx) {
+        classSet.stream()
+                .filter(x -> x.className.equals(ctx.basetypespecifier().getText()))
+                .findAny()
+                .ifPresent(x -> currentClass.superSet.add(x));
+        return super.visitBasespecifier(ctx);
+    }
+
+    @Override
     public T visitFunctionspecifier(CPP14Parser.FunctionspecifierContext ctx) {
         if (ctx.Virtual() != null)
             isVirtual = true;
@@ -94,12 +112,13 @@ public class WeakCheckVisitor<T> extends CPP14BaseVisitor<T> {
     private void addFunctionInfo(CPP14Parser.FunctiondefinitionContext ctx) {
         if (currentClass != null) {
             if (isVirtual) {
-                currentClass.virtualFunctionSet.add(currentFunction);
+                if (currentClass.superSet.stream()
+                        .anyMatch(x -> x.virtualFunctionSet.contains(currentFunction)))
+                    currentClass.virtualFunctionSet.add(currentFunction);
             } else {
                 if (!getText(ctx.declarator().ptrdeclarator().noptrdeclarator().noptrdeclarator())
                         .replace("~", "").equals(currentClass.className)) {
-                    currentClass.functionMap.computeIfPresent(currentAccessSpecifier,
-                            (k,v) -> v).add(ctx);
+                    currentClass.functionMap.computeIfPresent(currentAccessSpecifier, (k,v) -> v).add(ctx);
                 }
             }
         }
@@ -118,8 +137,7 @@ public class WeakCheckVisitor<T> extends CPP14BaseVisitor<T> {
     @Override
     public T visitMemberdeclaration(CPP14Parser.MemberdeclarationContext ctx) {
         if (ctx.functiondefinition() == null) {
-            currentClass.functionMap.computeIfPresent(currentAccessSpecifier,
-                    (k,v) -> v).add(ctx);
+            currentClass.functionMap.computeIfPresent(currentAccessSpecifier, (k,v) -> v).add(ctx);
         }
         return super.visitMemberdeclaration(ctx);
     }
