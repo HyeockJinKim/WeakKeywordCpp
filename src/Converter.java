@@ -4,10 +4,7 @@ import grammar.antlr.CPP14Lexer;
 import grammar.antlr.CPP14Parser;
 import org.antlr.v4.runtime.*;
 
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
@@ -25,14 +22,35 @@ public class Converter {
         return folderPath;
     }
 
+    private static int countLine(String filename) throws IOException {
+        int count = 0;
+        try (BufferedInputStream br = new BufferedInputStream(new FileInputStream(filename))) {
+            byte[] c = new byte[1024];
+            int charNum;
+            while ((charNum = br.read(c)) != -1) {
+                for (int i = 0; i < charNum; ++i) {
+                    if (c[i] == '\n')
+                        ++count;
+                }
+            }
+        }
+        return count;
+    }
+
     public static Optional<String> parse(String filePath) {
-        try {
-            CPP14Lexer lexer = new CPP14Lexer(new ANTLRFileStream(filePath));
+        try (FileInputStream fileInputStream = new FileInputStream(filePath)){
+            int fileLine = countLine(filePath);
+            if (fileLine > 30000) {
+                return Optional.empty();
+            }
+            ANTLRInputStream inputStream = new ANTLRInputStream(fileInputStream);
+            CPP14Lexer lexer = new CPP14Lexer(inputStream);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             CPP14Parser parser = new CPP14Parser(tokens);
             ParserRuleContext tree = parser.translationunit();
             WeakCheckVisitor visitor = new WeakCheckVisitor(tokens);
             visitor.visit(tree);
+//            System.out.println(visitor.getFullText());
             return Optional.ofNullable(visitor.getFullText());
         } catch (IOException e) {
             System.out.println("File Input is not correct");
