@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.Objects;
 import java.util.Optional;
 
 public class ReadFile {
@@ -21,20 +22,21 @@ public class ReadFile {
     public static void checkDirectory(String dirPath) throws IOException {
         File dir = new File(dirPath);
         if (!dir.isDirectory()) {
+            if (dir.isFile()) {
+                readCcFile(dirPath);
+                return ;
+            }
             System.out.println("No Directory: " + dir.getPath());
             return ;
         }
-        File[] files = dir.listFiles();
-        if (files != null) {
-            for (File file: files) {
-                if (file.isDirectory()) {
-                    checkDirectory(file.getPath());
-                } else if (file.getPath().endsWith(".cc")
-                        || file.getPath().endsWith(".cpp")
-                        || file.getPath().endsWith(".c++")
-                        || file.getPath().endsWith(".h")) {
-                    readCcFile(file.getPath());
-                }
+        for (File file: Objects.requireNonNull(dir.listFiles())) {
+            if (file.isDirectory()) {
+                checkDirectory(file.getPath());
+            } else if (file.getPath().endsWith(".cc")
+                    || file.getPath().endsWith(".cpp")
+                    || file.getPath().endsWith(".c++")
+                    || file.getPath().endsWith(".h")) {
+                readCcFile(file.getPath());
             }
         }
     }
