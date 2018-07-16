@@ -133,7 +133,7 @@ public class WeakCheckVisitor<T> extends CPP14BaseVisitor<T> {
         if (currentClass != null) {
             if (isVirtual) {
                 if (currentClass.superSet.stream()
-                        .anyMatch(x -> x.virtualFunctionSet.contains(currentFunction)))
+                        .noneMatch(x -> x.virtualFunctionSet.contains(currentFunction)))
                     currentClass.virtualFunctionSet.add(currentFunction);
             } else {
                 if (!getFunctionName(ctx).replace("~", "").equals(currentClass.className)) {
