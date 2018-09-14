@@ -8,10 +8,13 @@ import org.antlr.v4.runtime.*;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.Optional;
 
 
 public class Converter {
+    public static HashSet<String> moduleSet = new HashSet<>();
+
     private static String getFolderPath(String filePath) throws FileNotFoundException {
         Path path = Paths.get(filePath);
         String folderPath;
@@ -23,24 +26,30 @@ public class Converter {
         return folderPath;
     }
 
-    private static int countLine(String filename) throws IOException {
+    private static int checkFile(String filename) throws IOException {
         int count = 0;
-        try (BufferedInputStream br = new BufferedInputStream(new FileInputStream(filename))) {
-            byte[] c = new byte[1024];
-            int charNum;
-            while ((charNum = br.read(c)) != -1) {
-                for (int i = 0; i < charNum; ++i) {
-                    if (c[i] == '\n')
-                        ++count;
+        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                ++count;
+                if (line.contains("#include")) {
+                    if (line.contains("\"")) {
+                        String temp = line.split("\"")[1];
+                        String path = Paths.get(ReadFile.getBaseDir(), temp).toString();
+                        File file = new File(path);
+                        if (file.isFile()) {
+                            moduleSet.add(line.split("\"")[1]);
+                        }
+                    }
                 }
             }
         }
         return count;
     }
 
-    public static Optional<String> parse(String filePath) {
+    static Optional<String> parse(String filePath) {
         try (FileInputStream fileInputStream = new FileInputStream(filePath)){
-            int fileLine = countLine(filePath);
+            int fileLine = checkFile(filePath);
             if (fileLine > 30000) {
                 return Optional.empty();
             }

@@ -25,11 +25,16 @@ public class ReadFile {
             }
             if (path == null)
                 throw new IOException("NO File Input");
+            if (baseDir == null) {
+                baseDir = path;
+            }
 
             ReadFile.recursiveReadDirectory(path);
         } else {
             throw new IOException("No Args Input");
         }
+
+
     }
 
     private static void readOption(String arg1, String arg2) {
@@ -83,5 +88,9 @@ public class ReadFile {
                 readCcFile(file.getPath());
             }
         }
+    }
+
+    public static String getBaseDir() {
+        return baseDir;
     }
 }
