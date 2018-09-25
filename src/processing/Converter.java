@@ -13,7 +13,12 @@ import java.util.Optional;
 
 
 public class Converter {
-    public static HashSet<String> moduleSet = new HashSet<>();
+    private HashSet<String> moduleSet = new HashSet<>();
+    private String filePath;
+
+    Converter(String filePath) {
+        this.filePath = filePath;
+    }
 
     private static String getFolderPath(String filePath) throws FileNotFoundException {
         Path path = Paths.get(filePath);
@@ -26,7 +31,7 @@ public class Converter {
         return folderPath;
     }
 
-    private static int checkFile(String filename) throws IOException {
+    private int checkFile(String filename) throws IOException {
         int count = 0;
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             String line;
@@ -47,7 +52,7 @@ public class Converter {
         return count;
     }
 
-    static Optional<String> parse(String filePath) {
+    Optional<String> parse() {
         try (FileInputStream fileInputStream = new FileInputStream(filePath)){
             int fileLine = checkFile(filePath);
             if (fileLine > 30000) {
@@ -68,7 +73,7 @@ public class Converter {
         return Optional.empty();
     }
 
-    public static void writeCppFile(String filePath, String text) {
+    public void writeCppFile(String text) {
         try {
             String folderPath = getFolderPath(filePath);
             String fileName = Paths.get(filePath).getFileName().toString();

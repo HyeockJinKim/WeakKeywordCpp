@@ -55,7 +55,8 @@ public class ReadFile {
     private static void readCcFile(String filePath) throws IOException {
         try {
             System.out.println(filePath +" : " + count);
-            Optional<String> text = Converter.parse(filePath);
+            Converter converter = new Converter(filePath);
+            Optional<String> text = converter.parse();
             text.ifPresent(x -> {
                 ++count;
                 System.out.println(x);
