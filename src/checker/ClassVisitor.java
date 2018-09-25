@@ -5,15 +5,13 @@ import grammar.antlr.CPP14Parser;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.TokenStreamRewriter;
-import org.antlr.v4.runtime.misc.Interval;
 import weakclass.CppClass;
 import weakclass.CppFunction;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class WeakCheckVisitor<T> extends CPP14BaseVisitor<T> {
-    private TokenStreamRewriter reWriter;
+public class ClassVisitor<T> extends CommonVisitor<T> {
     private Set<CppClass> classSet;
     private CppClass currentClass;
     private CppFunction currentFunction;
@@ -23,7 +21,7 @@ public class WeakCheckVisitor<T> extends CPP14BaseVisitor<T> {
     private boolean isVirtual;
     private boolean isBaseClause;
 
-    public WeakCheckVisitor(CommonTokenStream tokens) {
+    public ClassVisitor(CommonTokenStream tokens) {
         super();
         reWriter = new TokenStreamRewriter(tokens);
         classSet = new HashSet<>();
@@ -75,16 +73,6 @@ public class WeakCheckVisitor<T> extends CPP14BaseVisitor<T> {
                 }
             }
         }
-    }
-
-    @Override
-    public T visitPostfixexpression(CPP14Parser.PostfixexpressionContext ctx) {
-        if (ctx.Static_cast() != null) {
-            if (classSet.stream()
-                    .anyMatch(x -> x.className.equals(ctx.thetypeid().getText().replace("*", ""))))
-                reWriter.insertBefore(ctx.thetypeid().start, "_");
-        }
-        return super.visitPostfixexpression(ctx);
     }
 
     @Override
@@ -143,6 +131,7 @@ public class WeakCheckVisitor<T> extends CPP14BaseVisitor<T> {
         }
     }
 
+
     /**
      * access specifier check
      */
@@ -165,16 +154,6 @@ public class WeakCheckVisitor<T> extends CPP14BaseVisitor<T> {
         return super.visitMemberdeclaration(ctx);
     }
 
-    @Override
-    public T visitIdexpression(CPP14Parser.IdexpressionContext ctx) {
-        if (ctx.Limited() != null) {
-            reWriter.replace(ctx.start, "");
-            if (classSet.stream()
-                    .anyMatch(x -> x.className.equals(ctx.idexpression().getText())))
-                reWriter.insertBefore(ctx.stop, "_");
-        }
-        return super.visitIdexpression(ctx);
-    }
 
     @Override
     public T visitTypespecifier(CPP14Parser.TypespecifierContext ctx) {
@@ -194,30 +173,22 @@ public class WeakCheckVisitor<T> extends CPP14BaseVisitor<T> {
         return visits;
     }
 
+
+
     private String copyMember(ParserRuleContext ctx) {
         if (!"\nprivate:\n".equals(currentAccessSpecifier))
             reWriter.replace(ctx.start, ctx.stop, "");
         return getText(ctx) + "\n";
     }
 
-    /**
-     * Converts input ctx to existing code.
-     * @param ctx
-     * @return
-     */
-    private String getText(ParserRuleContext ctx) {
-        Interval interval = new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        return ctx.start.getInputStream().getText(interval);
-    }
-
-    public String getFullText() {
-        return reWriter.getText();
-    }
-
-    public String getFunctionName(CPP14Parser.FunctiondefinitionContext ctx) {
+    private String getFunctionName(CPP14Parser.FunctiondefinitionContext ctx) {
         return getText(ctx.declarator()
                 .ptrdeclarator())
                 .replace("*", "")
                 .split("[\\(]")[0];
+    }
+
+    public Set<CppClass> getClassSet() {
+        return this.classSet;
     }
 }
