@@ -52,14 +52,11 @@ public class ReadFile {
         }
     }
 
-    private static void readCcFile(String filePath) throws IOException {
+    private static void convertCcFile(String filePath) {
         try {
             System.out.println(filePath +" : " + count);
-            Optional<String> text = Converter.parse(filePath);
-            text.ifPresent(x -> {
-                ++count;
-                System.out.println(x);
-            });
+            Converter converter = new Converter(filePath);
+            converter.convert();
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("No input path.");
         } catch (NullPointerException e) {
@@ -72,7 +69,7 @@ public class ReadFile {
         File dir = new File(dirPath);
         if (!dir.isDirectory()) {
             if (dir.isFile()) {
-                readCcFile(dirPath);
+                convertCcFile(dirPath);
                 return ;
             }
             System.out.println("No Directory: " + dir.getPath());
@@ -85,7 +82,7 @@ public class ReadFile {
                     || file.getPath().endsWith(".cpp")
                     || file.getPath().endsWith(".c++")
                     || file.getPath().endsWith(".h")) {
-                readCcFile(file.getPath());
+                convertCcFile(file.getPath());
             }
         }
     }
