@@ -131,13 +131,13 @@ public class Converter {
         sb.append("/*");
         JSONArray classesArr = new JSONArray();
         for (CppClass cppClass : classSet) {
-            JSONDictionary classDict = new JSONDictionary();
+            JSONDictionary classInfo = new JSONDictionary();
 
             JSONArray superSet = new JSONArray();
             for (CppClass superClass : cppClass.superSet) {
                 superSet.add(superClass.className);
             }
-            classDict.put("super", superSet);
+            classInfo.put("super", superSet);
 
             JSONArray virtual = new JSONArray();
             for (CppFunction virtualFunction : cppClass.virtualFunctionSet) {
@@ -149,7 +149,10 @@ public class Converter {
                 function.put(virtualFunction.functionName, params);
                 virtual.add(function);
             }
-            classDict.put("virtual", virtual);
+            classInfo.put("virtual", virtual);
+
+            JSONDictionary classDict = new JSONDictionary();
+            classDict.put(cppClass.className, classInfo);
 
             classesArr.add(classDict);
         }

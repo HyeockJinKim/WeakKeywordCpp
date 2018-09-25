@@ -2,13 +2,15 @@ package processing;
 
 import java.io.*;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Optional;
 
 public class ReadFile {
-    private static int count = 1;
     private static String baseDir;
     private static String log;
+    private static ArrayList<String> logList;
+
     public static void readArgs(String[] args) throws IOException, IndexOutOfBoundsException {
         if (args.length > 0) {
             String path = null;
@@ -29,12 +31,36 @@ public class ReadFile {
                 baseDir = path;
             }
 
+            if (log == null) {
+                if (new File(baseDir).isDirectory()) {
+                    log = Paths.get(baseDir, "log").toString();
+                } else {
+                    log = Paths.get(Paths.get(baseDir).getParent().toString(), "log").toString();
+                }
+            }
+            readLog();
             ReadFile.recursiveReadDirectory(path);
         } else {
             throw new IOException("No Args Input");
         }
 
 
+    }
+
+    private static void readLog() {
+        logList = new ArrayList<>();
+        if (!new File(log).exists()) {
+            return ;
+        }
+        try (BufferedReader br = new BufferedReader(new FileReader(log))) {
+            String path;
+            while ((path = br.readLine()) != null) {
+                logList.add(path);
+            }
+            System.out.println(logList.size() + " File Pass");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void readOption(String arg1, String arg2) {
@@ -52,11 +78,23 @@ public class ReadFile {
         }
     }
 
+    private static void log(String fileName) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(log, true))) {
+            bw.write(fileName);
+            bw.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private static void convertCcFile(String filePath) {
+        if (logList.contains(filePath)) {
+            return ;
+        }
         try {
-            System.out.println(filePath +" : " + count);
             Converter converter = new Converter(filePath);
             converter.convert();
+            log(filePath);
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("No input path.");
         } catch (NullPointerException e) {
