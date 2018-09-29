@@ -24,9 +24,14 @@ public class StaticCastVisitor<T> extends CommonVisitor<T> {
     @Override
     public T visitPostfixexpression(CPP14Parser.PostfixexpressionContext ctx) {
         if (ctx.Static_cast() != null) {
-            if (classSet.stream()
-                    .anyMatch(x -> x.className.equals(ctx.thetypeid().getText().replace("*", ""))))
-                reWriter.insertBefore(ctx.thetypeid().start, "_");
+            classSet.stream()
+                    .filter(x -> x.className.equals(ctx.thetypeid().getText().replace("*", "")))
+                    .findAny()
+                    .ifPresent(x -> {
+                        if (x.isVirtual()) {
+                            reWriter.insertBefore(ctx.thetypeid().start, "_");
+                        }
+                    });
         }
         return super.visitPostfixexpression(ctx);
     }
@@ -35,9 +40,14 @@ public class StaticCastVisitor<T> extends CommonVisitor<T> {
     public T visitIdexpression(CPP14Parser.IdexpressionContext ctx) {
         if (ctx.Limited() != null) {
             reWriter.replace(ctx.start, "");
-            if (classSet.stream()
-                    .anyMatch(x -> x.className.equals(ctx.idexpression().getText())))
-                reWriter.insertBefore(ctx.stop, "_");
+            classSet.stream()
+                    .filter(x -> x.className.equals(ctx.idexpression().getText()))
+                    .findAny()
+                    .ifPresent(x -> {
+                        if (x.isVirtual()) {
+                            reWriter.insertBefore(ctx.stop, "_");
+                        }
+                    });
         }
         return super.visitIdexpression(ctx);
     }
