@@ -2,6 +2,7 @@ package processing;
 
 import JSON.JSONArray;
 import JSON.JSONDictionary;
+import JSON.JSONObject;
 import checker.ClassVisitor;
 import checker.StaticCastVisitor;
 import grammar.antlr.CPP14Lexer;
@@ -18,7 +19,7 @@ import java.util.Set;
 
 
 public class Converter {
-    static final String tag = "/* This File is Converted */";
+    private static final String tag = "/* This File is Converted */";
 
     private HashSet<String> moduleSet = new HashSet<>();
     private String filePath;
@@ -36,6 +37,7 @@ public class Converter {
 
             while ((line = br.readLine()) != null) {
                 if (line.contains(tag)) {
+                    classSet = ProcessJson.readJson(br.readLine());
                     return false;
                 }
                 if (line.contains("#include")) {
@@ -104,7 +106,7 @@ public class Converter {
         if (checkFile(filePath)) {
             if (hasClass) {
                 Optional<String> result = parseClass();
-                String json = jsonifyClassSet();
+                String json = ProcessJson.jsonifyClassSet(classSet);
                 result.ifPresent(x -> writeCppFile(x, json));
             }
 
@@ -112,6 +114,10 @@ public class Converter {
                 Optional<String> result = parseStaticCast();
                 result.ifPresent(x -> writeCppFile(x, tag));
             }
+        }
+        System.out.println("HI");
+        for (CppClass cppClass : classSet) {
+            System.out.println(cppClass);
         }
     }
 
@@ -125,40 +131,10 @@ public class Converter {
             e.printStackTrace();
         }
     }
-
-    private String jsonifyClassSet() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("/*");
-        JSONArray classesArr = new JSONArray();
-        for (CppClass cppClass : classSet) {
-            JSONDictionary classInfo = new JSONDictionary();
-
-            JSONArray superSet = new JSONArray();
-            for (CppClass superClass : cppClass.superSet) {
-                superSet.add(superClass.className);
-            }
-            classInfo.put("super", superSet);
-
-            JSONArray virtual = new JSONArray();
-            for (CppFunction virtualFunction : cppClass.virtualFunctionSet) {
-                JSONDictionary function = new JSONDictionary();
-                JSONArray params = new JSONArray();
-                for (String param : virtualFunction.functionParameter) {
-                    params.add(param);
-                }
-                function.put(virtualFunction.functionName, params);
-                virtual.add(function);
-            }
-            classInfo.put("virtual", virtual);
-
-            JSONDictionary classDict = new JSONDictionary();
-            classDict.put(cppClass.className, classInfo);
-
-            classesArr.add(classDict);
-        }
-        sb.append(classesArr.toString());
-        sb.append("*/");
-        return sb.toString();
-    }
-
+/*
+ * B
+ * super:
+ * virtual:
+ * function Name: f ()
+ */
 }

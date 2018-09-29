@@ -88,9 +88,9 @@ public class ReadFile {
     }
 
     private static void convertCcFile(String filePath) {
-        if (logList.contains(filePath)) {
-            return ;
-        }
+//        if (logList.contains(filePath)) {
+//            return ;
+//        }
         try {
             Converter converter = new Converter(filePath);
             converter.convert();
@@ -98,7 +98,7 @@ public class ReadFile {
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("No input path.");
         } catch (NullPointerException e) {
-            System.out.println(filePath);
+            e.printStackTrace();
         }
         // TODO : Out of memory problem !
     }
