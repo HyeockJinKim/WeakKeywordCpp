@@ -1,6 +1,5 @@
 package checker;
 
-import grammar.antlr.CPP14BaseVisitor;
 import grammar.antlr.CPP14Parser;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -39,6 +38,7 @@ public class ClassVisitor<T> extends CommonVisitor<T> {
             currentAccessSpecifier = "\n";
             visits = super.visitClassspecifier(ctx);
             reWriteClass(ctx); // ctx visits
+            classSet.add(currentClass);
             currentClass = null;
         } else {
             visits = super.visitClassspecifier(ctx);
@@ -50,7 +50,7 @@ public class ClassVisitor<T> extends CommonVisitor<T> {
         if (ctx != null) {
             if (ctx.classhead() != null) {
                 if (ctx.classhead().baseclause() != null
-                        && !currentClass.virtualFunctionSet.isEmpty()) {
+                        && currentClass.isVirtual()) {
                     StringBuilder tempClass = new StringBuilder();
                     tempClass.append(getText(ctx.classhead().classkey()))
                             .append(" _")
@@ -69,7 +69,6 @@ public class ClassVisitor<T> extends CommonVisitor<T> {
                             ctx.classhead().baseclause().stop,
                             ": public _" + getText(ctx.classhead().classheadname()));
                     reWriter.insertBefore(ctx.start, tempClass.toString());
-                    classSet.add(currentClass);
                 }
             }
         }

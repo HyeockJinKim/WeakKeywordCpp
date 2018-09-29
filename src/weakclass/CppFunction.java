@@ -20,6 +20,19 @@ public class CppFunction {
     }
 
     @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("function Name: ")
+                .append(functionName)
+                .append(" (");
+        for (String param : functionParameter) {
+            sb.append(param).append(", ");
+        }
+        sb.append(")\n");
+        return sb.toString();
+    }
+
+    @Override
     public int hashCode() {
         return functionName.length() * 31 + functionParameter.size();
     }
