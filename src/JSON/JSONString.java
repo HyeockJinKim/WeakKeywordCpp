@@ -17,13 +17,13 @@ public class JSONString extends JSONObject {
 
     @Override
     public int hashCode() {
-        return jsonString.length();
+        return jsonString.toString().length();
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof JSONString) {
-            return jsonString.equals(((JSONString) obj).jsonString);
+            return jsonString.toString().equals(((JSONString) obj).jsonString.toString());
         }
         return false;
     }
