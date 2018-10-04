@@ -63,9 +63,8 @@ public class Converter {
     }
 
     private Optional<String> parseClass(String filePath) {
-        try (FileInputStream fileInputStream = new FileInputStream(filePath)) {
-            ANTLRInputStream inputStream = new ANTLRInputStream(fileInputStream);
-            CPP14Lexer lexer = new CPP14Lexer(inputStream);
+        try {
+            CPP14Lexer lexer = new CPP14Lexer(CharStreams.fromFileName(filePath));
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             CPP14Parser parser = new CPP14Parser(tokens);
             ParserRuleContext tree = parser.translationunit();
@@ -81,9 +80,8 @@ public class Converter {
     }
 
     private Optional<String> parseStaticCast(String filePath) {
-        try (FileInputStream fileInputStream = new FileInputStream(filePath)) {
-            ANTLRInputStream inputStream = new ANTLRInputStream(fileInputStream);
-            CPP14Lexer lexer = new CPP14Lexer(inputStream);
+        try {
+            CPP14Lexer lexer = new CPP14Lexer(CharStreams.fromFileName(filePath));
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             CPP14Parser parser = new CPP14Parser(tokens);
             ParserRuleContext tree = parser.translationunit();
