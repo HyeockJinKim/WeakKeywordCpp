@@ -9,7 +9,6 @@ import grammar.antlr.CPP14Lexer;
 import grammar.antlr.CPP14Parser;
 import org.antlr.v4.runtime.*;
 import weakclass.CppClass;
-import weakclass.CppFunction;
 
 import java.io.*;
 import java.nio.file.Paths;
@@ -19,9 +18,7 @@ import java.util.Set;
 
 
 public class Converter {
-    private static final String tag = "/* This File is Converted */";
-
-    private HashSet<String> moduleSet = new HashSet<>();
+    private HashSet<String> moduleSet;
     private String filePath;
     private boolean hasClass;
     private boolean hasStaticCast;
@@ -34,12 +31,8 @@ public class Converter {
     private boolean checkFile(String filename) {
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             String line;
-
+            moduleSet = new HashSet<>();
             while ((line = br.readLine()) != null) {
-                if (line.contains(tag)) {
-                    classSet = ProcessJson.readJson(br.readLine());
-                    return false;
-                }
                 if (line.contains("#include")) {
                     if (line.contains("\"")) {
                         String temp = line.split("\"")[1];
@@ -63,7 +56,13 @@ public class Converter {
         return true;
     }
 
-    private Optional<String> parseClass() {
+    private void moduleCheck() {
+        for (String module : moduleSet) {
+            parseClass(Paths.get(ReadFile.getBaseDir(), module).toString());
+        }
+    }
+
+    private Optional<String> parseClass(String filePath) {
         try (FileInputStream fileInputStream = new FileInputStream(filePath)) {
             ANTLRInputStream inputStream = new ANTLRInputStream(fileInputStream);
             CPP14Lexer lexer = new CPP14Lexer(inputStream);
@@ -71,10 +70,9 @@ public class Converter {
             CPP14Parser parser = new CPP14Parser(tokens);
             ParserRuleContext tree = parser.translationunit();
 
-            ClassVisitor visitor = new ClassVisitor(tokens);
+            ClassVisitor visitor = new ClassVisitor(tokens, classSet);
             visitor.visit(tree);
-            classSet = visitor.getClassSet();
-
+            classSet.addAll(visitor.getClassSet());
             return Optional.ofNullable(visitor.getFullText());
         } catch (IOException e) {
             System.out.println("File Input is not correct");
@@ -82,7 +80,7 @@ public class Converter {
         return Optional.empty();
     }
 
-    private Optional<String> parseStaticCast() {
+    private Optional<String> parseStaticCast(String filePath) {
         try (FileInputStream fileInputStream = new FileInputStream(filePath)) {
             ANTLRInputStream inputStream = new ANTLRInputStream(fileInputStream);
             CPP14Lexer lexer = new CPP14Lexer(inputStream);
@@ -104,20 +102,17 @@ public class Converter {
     void convert() {
         classSet = new HashSet<>();
         if (checkFile(filePath)) {
-            if (hasClass) {
-                Optional<String> result = parseClass();
-                String json = ProcessJson.jsonifyClassSet(classSet);
-                result.ifPresent(x -> writeCppFile(x, json));
-            }
+            if (moduleSet.size() > 0)
+                moduleCheck();
+
+            Optional<String> result = parseClass(filePath);
+            String json = ProcessJson.jsonifyClassSet(classSet);
+            result.ifPresent(x -> writeCppFile(x, json));
 
             if (hasStaticCast) {
-                Optional<String> result = parseStaticCast();
-                result.ifPresent(x -> writeCppFile(x, tag));
+                result = parseStaticCast(filePath);
+                result.ifPresent(x -> writeCppFile(x, ""));
             }
-        }
-        System.out.println("HI");
-        for (CppClass cppClass : classSet) {
-            System.out.println(cppClass);
         }
     }
 
@@ -131,10 +126,4 @@ public class Converter {
             e.printStackTrace();
         }
     }
-/*
- * B
- * super:
- * virtual:
- * function Name: f ()
- */
 }

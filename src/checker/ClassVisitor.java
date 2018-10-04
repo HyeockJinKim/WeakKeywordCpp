@@ -20,10 +20,10 @@ public class ClassVisitor<T> extends CommonVisitor<T> {
     private boolean isVirtual;
     private boolean isBaseClause;
 
-    public ClassVisitor(CommonTokenStream tokens) {
+    public ClassVisitor(CommonTokenStream tokens, Set<CppClass> classSet) {
         super();
         reWriter = new TokenStreamRewriter(tokens);
-        classSet = new HashSet<>();
+        this.classSet = classSet;
     }
 
     @Override

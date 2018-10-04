@@ -88,9 +88,9 @@ public class ReadFile {
     }
 
     private static void convertCcFile(String filePath) {
-//        if (logList.contains(filePath)) {
-//            return ;
-//        }
+        if (logList.contains(filePath)) {
+            return ;
+        }
         try {
             Converter converter = new Converter(filePath);
             converter.convert();
