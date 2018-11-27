@@ -28,32 +28,53 @@ public class Converter {
         this.filePath = filePath;
     }
 
+    /**
+     *
+     * @param filename
+     * @return
+     */
     private boolean checkFile(String filename) {
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             String line;
             moduleSet = new HashSet<>();
             while ((line = br.readLine()) != null) {
-                if (line.contains("#include")) {
-                    if (line.contains("\"")) {
-                        String temp = line.split("\"")[1];
-                        String path = Paths.get(ReadFile.getBaseDir(), temp).toString();
-                        File file = new File(path);
-                        if (file.isFile()) {
-                            moduleSet.add(line.split("\"")[1]);
-                        }
-                    }
-                }
-                if (line.contains("class")) {
-                    hasClass = true;
-                }
-                if (line.contains("static_cast")) {
-                    hasStaticCast = true;
-                }
+                includeCheck(line);
+                classCheck(line);
+                staticCastCheck(line);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
         return true;
+    }
+
+    /**
+     * If "#include" is included in line, add that path to module set
+     * @param line
+     */
+    private void includeCheck(String line) {
+        if (line.contains("#include")) {
+            if (line.contains("\"")) {
+                String temp = line.split("\"")[1];
+                String path = Paths.get(ReadFile.getBaseDir(), temp).toString();
+                File file = new File(path);
+                if (file.isFile()) {
+                    moduleSet.add(line.split("\"")[1]);
+                }
+            }
+        }
+    }
+
+    private void classCheck(String line) {
+        if (line.contains("class")) {
+            hasClass = true;
+        }
+    }
+
+    private void staticCastCheck(String line) {
+        if (line.contains("static_cast")) {
+            hasStaticCast = true;
+        }
     }
 
     private void moduleCheck() {
@@ -103,10 +124,12 @@ public class Converter {
             if (moduleSet.size() > 0)
                 moduleCheck();
 
-            Optional<String> result = parseClass(filePath);
-            String json = ProcessJson.jsonifyClassSet(classSet);
-            result.ifPresent(x -> writeCppFile(x, json));
-
+            Optional<String> result;
+            if (hasClass) {
+                result = parseClass(filePath);
+                String json = ProcessJson.jsonifyClassSet(classSet);
+                result.ifPresent(x -> writeCppFile(x, json));
+            }
             if (hasStaticCast) {
                 result = parseStaticCast(filePath);
                 result.ifPresent(x -> writeCppFile(x, ""));
