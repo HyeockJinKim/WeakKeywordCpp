@@ -47,7 +47,6 @@ public class ProcessJson {
     }
 
     static Set<CppClass> readJson(String json) {
-        json = json.substring(2);
         JSONArray classSets = (JSONArray) JSONObject.parseJson(json);
         if (classSets == null) {
             return new HashSet<>();
@@ -97,7 +96,6 @@ public class ProcessJson {
 
     static String jsonifyClassSet(Set<CppClass> classSet) {
         StringBuilder sb = new StringBuilder();
-        sb.append("/*");
         JSONArray classesArr = new JSONArray();
         for (CppClass cppClass : classSet) {
             JSONDictionary classInfo = new JSONDictionary();
@@ -112,7 +110,6 @@ public class ProcessJson {
         }
 
         sb.append(classesArr.toString());
-        sb.append("*/");
         return sb.toString();
     }
 }

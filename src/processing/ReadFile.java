@@ -8,22 +8,22 @@ import java.util.Objects;
 public class ReadFile {
     private static String baseDir;
     private static String log;
-    private static ArrayList<String> logList;
+    private static ArrayList<String> passList;
 
     /**
      * Read Args for setting
      * @param args Args for setting path, baseDir, LogDir
      * @throws IOException Args's length less than 1 or No path input
      */
-    public static void readArgs(String[] args) throws IOException {
+    public static void read(String[] args) throws IOException {
         if (args.length > 0) {
-            String path = readPath(args);
-
+            String path = readArgs(args);
             if (path == null)
                 throw new IOException("NO File Input");
+
             setArgsDefault(path);
             readLog();
-            ReadFile.ReadDirectoryRecursively(path);
+            readDirectoryRecursively(path);
         } else {
             throw new IOException("No Args Input");
         }
@@ -36,7 +36,7 @@ public class ReadFile {
      * @throws IOException No file path
      * @throws IndexOutOfBoundsException Last args is '-'
      */
-    private static String readPath(String[] args) throws IOException, IndexOutOfBoundsException {
+    private static String readArgs(String[] args) throws IOException, IndexOutOfBoundsException {
         String path = null;
         for (int i = 0; i < args.length; ++i) {
             if (args[i].startsWith("-")) {
@@ -71,19 +71,19 @@ public class ReadFile {
     }
 
     /**
-     * Read writeLog and add it to pass list
+     * Read written Log and add it to pass list
      */
     private static void readLog() {
-        logList = new ArrayList<>();
-        if (!new File(log).exists()) {
+        passList = new ArrayList<>();
+        if (!new File(log).exists())
             return ;
-        }
+
         try (BufferedReader br = new BufferedReader(new FileReader(log))) {
             String path;
             while ((path = br.readLine()) != null) {
-                logList.add(path);
+                passList.add(path);
             }
-            System.out.println(logList.size() + " File Pass");
+            System.out.println(passList.size() + " File Pass");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -91,6 +91,10 @@ public class ReadFile {
 
     /**
      * Read Args and set options
+     *
+     * basedir: module's base directory
+     * log: log directory
+     *
      * @param arg1 Option's type
      * @param arg2 Option's value
      */
@@ -100,7 +104,7 @@ public class ReadFile {
             case "b":
                 baseDir = arg2;
                 break;
-            case "-writeLog":
+            case "-log":
             case "l":
                 log = arg2;
                 break;
@@ -110,7 +114,7 @@ public class ReadFile {
     }
 
     /**
-     * FIXME: Make directory and logging in the directory
+     * FIXME: Make log directory and logging in the directory
      * Write Log
      * @param fileName File name for Logging
      */
@@ -128,13 +132,13 @@ public class ReadFile {
      * @param filePath File path for converting
      */
     private static void convertCcFile(String filePath) {
-        if (logList.contains(filePath)) {
+        if (passList.contains(filePath))
             return ;
-        }
+
         try {
             Converter converter = new Converter(filePath);
-            converter.convert();
-            writeLog(filePath);
+            if (converter.convert())
+                writeLog(filePath);
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("No input path.");
         } catch (NullPointerException e) {
@@ -148,7 +152,7 @@ public class ReadFile {
      * @param dirPath Directory path for Reading
      * @throws IOException No file input
      */
-    private static void ReadDirectoryRecursively(String dirPath) throws IOException {
+    private static void readDirectoryRecursively(String dirPath) throws IOException {
         File dir = new File(dirPath);
         if (!dir.isDirectory()) {
             checkCCFile(dir);
@@ -156,14 +160,14 @@ public class ReadFile {
         }
         for (File file: Objects.requireNonNull(dir.listFiles())) {
             if (file.isDirectory())
-                ReadDirectoryRecursively(file.getPath());
+                readDirectoryRecursively(file.getPath());
             else
                 checkCCFile(file);
         }
     }
 
     /**
-     * Check this file is .cc file
+     * Check this file is .cc file and convert it
      * @param file File for checking
      * @throws IOException No file input
      */

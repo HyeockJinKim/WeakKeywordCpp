@@ -15,11 +15,13 @@ import java.util.Set;
 
 
 public class Converter {
-    private HashSet<String> moduleSet;
+    private Set<CppClass> classSet;
     private String filePath;
     private boolean hasClass;
     private boolean hasStaticCast;
-    private Set<CppClass> classSet;
+    private HashSet<String> moduleSet;
+
+    private static final String logDir = "log";
 
     /**
      * Constructor for converter
@@ -86,6 +88,7 @@ public class Converter {
 
     /**
      * Check module in .cc file
+     * TODO Alread parsed modules don't require parsing again
      */
     private void checkModule() {
         for (String module : moduleSet) {
@@ -140,11 +143,10 @@ public class Converter {
     }
 
     /**
-     * FIXME parseClass doesn't require rewriteCppFile, but write log in Log directory
      * Convert .cc file if code has class or static_cast
      * If module wasn't parsed, parse it
      */
-    void convert() {
+    boolean convert() {
         classSet = new HashSet<>();
 
         /* Check hasClass, hasStaticCast */
@@ -155,24 +157,35 @@ public class Converter {
         if (hasClass) {
             result = parseClass(filePath);
             String json = ProcessJson.jsonifyClassSet(classSet);
-            result.ifPresent(x -> rewriteCppFile(x, json));
+            result.ifPresent(x -> writeClassInfo(x, json));
         }
         if (hasStaticCast) {
             result = parseStaticCast(filePath);
-            result.ifPresent(x -> rewriteCppFile(x, ""));
+            result.ifPresent(this::rewriteCppFile);
         }
 
+        return hasStaticCast;
+    }
+
+    /**
+     * Write class's information as JSON
+     * @param filePath FilePath for logging
+     * @param classInfo Class information stored in JSON
+     */
+    private void writeClassInfo(String filePath, String classInfo) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(Paths.get(logDir, filePath).toString()))) {
+            bw.write(classInfo);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
      * Rewrite Cpp file to make safe in v-table
      * @param file .cc file
-     * @param tag FIXME Remove this
      */
-    private void rewriteCppFile(String file, String tag) {
+    private void rewriteCppFile(String file) {
         try(BufferedWriter bw = new BufferedWriter(new FileWriter(filePath))) {
-            bw.write(tag);
-            bw.newLine();
             bw.write(file);
             System.out.println(file);
         } catch (IOException e) {
