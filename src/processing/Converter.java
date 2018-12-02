@@ -88,21 +88,22 @@ public class Converter {
 
     /**
      * Check module in .cc file
-     * TODO Alread parsed modules don't require parsing again
+     * TODO Already parsed modules don't require parsing again
      */
     private void checkModule() {
         for (String module : moduleSet) {
-            parseClass(Paths.get(ReadFile.getBaseDir(), module).toString());
+            if (new File(getClassInfoFilePath(module)).exists())
+                addClassInfo(module);
+            else
+                parseClass(Paths.get(ReadFile.getBaseDir(), module).toString());
         }
     }
 
     /**
-     * FIXME parseClass does not require return value
      * Parse file for saving class information
      * @param filePath File path for parsing
-     * @return Parsed C++ code
      */
-    private Optional<String> parseClass(String filePath) {
+    private void parseClass(String filePath) {
         try {
             CPP14Lexer lexer = new CPP14Lexer(CharStreams.fromFileName(filePath));
             CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -112,11 +113,9 @@ public class Converter {
             ClassVisitor visitor = new ClassVisitor(tokens, classSet);
             visitor.visit(tree);
             classSet.addAll(visitor.getClassSet());
-            return Optional.ofNullable(visitor.getFullText());
         } catch (IOException e) {
             System.out.println("File Input is not correct");
         }
-        return Optional.empty();
     }
 
     /**
@@ -153,18 +152,39 @@ public class Converter {
         checkFile(filePath);
         checkModule();
 
-        Optional<String> result;
         if (hasClass) {
-            result = parseClass(filePath);
+            parseClass(filePath);
             String json = ProcessJson.jsonifyClassSet(classSet);
-            result.ifPresent(x -> writeClassInfo(x, json));
+            writeClassInfo(filePath, json);
         }
         if (hasStaticCast) {
-            result = parseStaticCast(filePath);
+            Optional<String> result = parseStaticCast(filePath);
             result.ifPresent(this::rewriteCppFile);
         }
 
         return hasStaticCast;
+    }
+
+    /**
+     * Add class's information to classSet
+     * @param module Module to get class information
+     */
+    private void addClassInfo(String module) {
+        String classInfoFile = getClassInfoFilePath(module);
+        try (BufferedReader br = new BufferedReader(new FileReader(classInfoFile))) {
+            classSet.addAll(ProcessJson.readJson(br.readLine()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Get class's information file's path
+     * @param filePath File path to get class information
+     * @return Class information file's path
+     */
+    private String getClassInfoFilePath(String filePath) {
+        return Paths.get(ReadFile.getBaseDir(), logDir, filePath+".info").toString();
     }
 
     /**
@@ -173,7 +193,8 @@ public class Converter {
      * @param classInfo Class information stored in JSON
      */
     private void writeClassInfo(String filePath, String classInfo) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(Paths.get(logDir, filePath).toString()))) {
+        new File(getClassInfoFilePath(filePath)).getParentFile().mkdirs();
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(getClassInfoFilePath(filePath)))) {
             bw.write(classInfo);
         } catch (IOException e) {
             e.printStackTrace();
