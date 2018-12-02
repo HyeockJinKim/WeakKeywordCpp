@@ -12,7 +12,7 @@ import weakclass.CppFunction;
 import java.util.HashSet;
 import java.util.Set;
 
-public class StaticCastVisitor<T> extends CommonVisitor<T> {
+public class StaticCastVisitor extends CommonVisitor<Void> {
     private Set<CppClass> classSet;
 
     public StaticCastVisitor(CommonTokenStream tokens, Set<CppClass> classSet) {
@@ -22,7 +22,7 @@ public class StaticCastVisitor<T> extends CommonVisitor<T> {
     }
 
     @Override
-    public T visitPostfixexpression(CPP14Parser.PostfixexpressionContext ctx) {
+    public Void visitPostfixexpression(CPP14Parser.PostfixexpressionContext ctx) {
         if (ctx.Static_cast() != null) {
             classSet.stream()
                     .filter(x -> x.className.equals(ctx.thetypeid().getText().replace("*", "")))
@@ -33,11 +33,12 @@ public class StaticCastVisitor<T> extends CommonVisitor<T> {
                         }
                     });
         }
-        return super.visitPostfixexpression(ctx);
+        super.visitPostfixexpression(ctx);
+        return null;
     }
 
     @Override
-    public T visitIdexpression(CPP14Parser.IdexpressionContext ctx) {
+    public Void visitIdexpression(CPP14Parser.IdexpressionContext ctx) {
         if (ctx.Limited() != null) {
             reWriter.replace(ctx.start, "");
             classSet.stream()
@@ -49,7 +50,8 @@ public class StaticCastVisitor<T> extends CommonVisitor<T> {
                         }
                     });
         }
-        return super.visitIdexpression(ctx);
+        super.visitIdexpression(ctx);
+        return null;
     }
 
 }

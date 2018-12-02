@@ -7,10 +7,9 @@ import org.antlr.v4.runtime.TokenStreamRewriter;
 import weakclass.CppClass;
 import weakclass.CppFunction;
 
-import java.util.HashSet;
 import java.util.Set;
 
-public class ClassVisitor<T> extends CommonVisitor<T> {
+public class ClassVisitor<T> extends CommonVisitor<Void> {
     private Set<CppClass> classSet;
     private CppClass currentClass;
     private CppFunction currentFunction;
@@ -20,30 +19,37 @@ public class ClassVisitor<T> extends CommonVisitor<T> {
     private boolean isVirtual;
     private boolean isBaseClause;
 
+    /**
+     * Constructor for ClassVisitor
+     * @param tokens Token stream for parsing
+     * @param classSet Class information
+     */
     public ClassVisitor(CommonTokenStream tokens, Set<CppClass> classSet) {
         super();
         reWriter = new TokenStreamRewriter(tokens);
         this.classSet = classSet;
     }
 
+    /**
+     *
+     * @param ctx
+     */
     @Override
-    public T visitClassspecifier(CPP14Parser.ClassspecifierContext ctx) {
-        T visits;
+    public Void visitClassspecifier(CPP14Parser.ClassspecifierContext ctx) {
         // Ignore Nested Class !!
         if (currentClass != null) {
-            return null;
         }
         if (ctx.classhead().classheadname() != null) { // no name check
             currentClass = new CppClass(getText(ctx.classhead().classheadname()));
             currentAccessSpecifier = "\n";
-            visits = super.visitClassspecifier(ctx);
+            super.visitClassspecifier(ctx);
             reWriteClass(ctx); // ctx visits
             classSet.add(currentClass);
             currentClass = null;
         } else {
-            visits = super.visitClassspecifier(ctx);
+            super.visitClassspecifier(ctx);
         }
-        return visits;
+        return null;
     }
 
     private void reWriteClass(CPP14Parser.ClassspecifierContext ctx) {
@@ -75,45 +81,47 @@ public class ClassVisitor<T> extends CommonVisitor<T> {
     }
 
     @Override
-    public T visitBaseclause(CPP14Parser.BaseclauseContext ctx) {
+    public Void visitBaseclause(CPP14Parser.BaseclauseContext ctx) {
         isBaseClause = true;
-        T result =  super.visitBaseclause(ctx);
+        super.visitBaseclause(ctx);
         isBaseClause = false;
-        return result;
+        return null;
     }
 
     @Override
-    public T visitBasespecifier(CPP14Parser.BasespecifierContext ctx) {
+    public Void visitBasespecifier(CPP14Parser.BasespecifierContext ctx) {
         if (isBaseClause) {
             classSet.stream()
                     .filter(x -> x.className.equals(ctx.basetypespecifier().getText()))
                     .findAny()
                     .ifPresent(x -> currentClass.superSet.add(x));
         }
-        return super.visitBasespecifier(ctx);
+        super.visitBasespecifier(ctx);
+        return null;
     }
 
     @Override
-    public T visitFunctionspecifier(CPP14Parser.FunctionspecifierContext ctx) {
+    public Void visitFunctionspecifier(CPP14Parser.FunctionspecifierContext ctx) {
         if (ctx.Virtual() != null)
             isVirtual = true;
-        return super.visitFunctionspecifier(ctx);
+        super.visitFunctionspecifier(ctx);
+        return null;
     }
 
     @Override
-    public T visitFunctiondefinition(CPP14Parser.FunctiondefinitionContext ctx) {
-        T visits;
+    public Void visitFunctiondefinition(CPP14Parser.FunctiondefinitionContext ctx) {
         if (currentClass != null) {
             isVirtual = false;
             currentFunction = new CppFunction();
             currentFunction.functionName = getFunctionName(ctx);
-            visits = super.visitFunctiondefinition(ctx);
+            super.visitFunctiondefinition(ctx);
             addFunctionInfo(ctx);
             currentFunction = null;
         } else {
-            visits = super.visitFunctiondefinition(ctx);
+            super.visitFunctiondefinition(ctx);
         }
-        return visits;
+
+        return null;
     }
 
     private void addFunctionInfo(CPP14Parser.FunctiondefinitionContext ctx) {
@@ -135,41 +143,44 @@ public class ClassVisitor<T> extends CommonVisitor<T> {
      * access specifier check
      */
     @Override
-    public T visitMemberspecification(CPP14Parser.MemberspecificationContext ctx) {
+    public Void visitMemberspecification(CPP14Parser.MemberspecificationContext ctx) {
         if (currentClass != null) {
             if (ctx.accessspecifier() != null)
                 currentAccessSpecifier = "\n" + getText(ctx.accessspecifier()) + ":\n";
         }
-        return super.visitMemberspecification(ctx);
+        super.visitMemberspecification(ctx);
+        return null;
     }
 
     @Override
-    public T visitMemberdeclaration(CPP14Parser.MemberdeclarationContext ctx) {
+    public Void visitMemberdeclaration(CPP14Parser.MemberdeclarationContext ctx) {
         if (currentClass != null) {
             if (ctx.functiondefinition() == null) {
                 currentClass.functionMap.computeIfPresent(currentAccessSpecifier, (k, v) -> v).add(ctx);
             }
         }
-        return super.visitMemberdeclaration(ctx);
+        super.visitMemberdeclaration(ctx);
+        return null;
     }
 
 
     @Override
-    public T visitTypespecifier(CPP14Parser.TypespecifierContext ctx) {
+    public Void visitTypespecifier(CPP14Parser.TypespecifierContext ctx) {
         if (currentClass != null) {
             if (currentFunction != null && isParam)
                 currentFunction.functionParameter.add(getText(ctx));
         }
-        return super.visitTypespecifier(ctx);
+        super.visitTypespecifier(ctx);
+        return null;
     }
 
     @Override
-    public T visitParametersandqualifiers(CPP14Parser.ParametersandqualifiersContext ctx) {
+    public Void visitParametersandqualifiers(CPP14Parser.ParametersandqualifiersContext ctx) {
         isParam = true;
-        T visits = super.visitParametersandqualifiers(ctx);
+        super.visitParametersandqualifiers(ctx);
         isParam = false;
 
-        return visits;
+        return null;
     }
 
 
