@@ -1,7 +1,7 @@
 package processing;
 
-import checker.ClassVisitor;
-import checker.StaticCastVisitor;
+import checker.classinfo.ClassVisitor;
+import checker.cast.StaticCastVisitor;
 import grammar.antlr.CPP14Lexer;
 import grammar.antlr.CPP14Parser;
 import org.antlr.v4.runtime.*;
@@ -88,14 +88,16 @@ public class Converter {
 
     /**
      * Check module in .cc file
-     * TODO Already parsed modules don't require parsing again
      */
     private void checkModule() {
         for (String module : moduleSet) {
             if (new File(getClassInfoFilePath(module)).exists())
                 addClassInfo(module);
-            else
+            else {
+                // TODO parseClass require its module's class information
                 parseClass(Paths.get(ReadFile.getBaseDir(), module).toString());
+
+            }
         }
     }
 
@@ -112,6 +114,7 @@ public class Converter {
 
             ClassVisitor visitor = new ClassVisitor(tokens, classSet);
             visitor.visit(tree);
+            System.out.println(visitor.getFullText());
             classSet.addAll(visitor.getClassSet());
         } catch (IOException e) {
             System.out.println("File Input is not correct");
@@ -154,8 +157,8 @@ public class Converter {
 
         if (hasClass) {
             parseClass(filePath);
-            String json = ProcessJson.jsonifyClassSet(classSet);
-            writeClassInfo(filePath, json);
+//            String json = ProcessJson.jsonifyClassSet(classSet);
+//            writeClassInfo(filePath, json);
         }
         if (hasStaticCast) {
             Optional<String> result = parseStaticCast(filePath);
@@ -172,7 +175,7 @@ public class Converter {
     private void addClassInfo(String module) {
         String classInfoFile = getClassInfoFilePath(module);
         try (BufferedReader br = new BufferedReader(new FileReader(classInfoFile))) {
-            classSet.addAll(ProcessJson.readJson(br.readLine()));
+//            classSet.addAll(ProcessJson.readJson(br.readLine()));
         } catch (IOException e) {
             e.printStackTrace();
         }
