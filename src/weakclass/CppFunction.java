@@ -1,31 +1,73 @@
 package weakclass;
 
+import checker.util.Info;
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import java.util.ArrayList;
 
 public class CppFunction {
-    public String functionName;
-    public ArrayList<String> functionParameter;
+    private ArrayList<String> parameters;
+    private CppAccessSpecifier accessSpecifier;
+    private ParserRuleContext content;
+    private String name;
 
-    public CppFunction() {
-        functionParameter = new ArrayList<>();
+    private boolean isVirtual;
+
+    public CppFunction(CppAccessSpecifier accessSpecifier) {
+        this.name = null;
+        this.parameters = new ArrayList<>();
+        this.accessSpecifier = accessSpecifier;
+        this.content = null;
+    }
+
+    public CppAccessSpecifier getAccessSpecifier() {
+        return accessSpecifier;
+    }
+
+    public String getContent() {
+        return Info.getText(content) + "\n";
+    }
+
+    public ParserRuleContext getContext() {
+        return content;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setParameters(ArrayList<String> parameters) {
+        this.parameters = parameters;
+    }
+
+    public void setContent(ParserRuleContext content) {
+        this.content = content;
     }
 
     @Override
     public boolean equals(Object cppFunction) {
         if (cppFunction instanceof  CppFunction) {
-            return functionName.equals(((CppFunction) cppFunction).functionName)
-                    && functionParameter.equals(((CppFunction) cppFunction).functionParameter);
+            return name.equals(((CppFunction) cppFunction).name)
+                    && parameters.equals(((CppFunction) cppFunction).parameters);
         }
         return false;
+    }
+
+    public void setVirtual() {
+        isVirtual = true;
+    }
+
+    public boolean isVirtual() {
+        return isVirtual;
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("function Name: ")
-                .append(functionName)
+                .append(name)
                 .append(" (");
-        for (String param : functionParameter) {
+        for (String param : parameters) {
             sb.append(param).append(", ");
         }
         sb.append(")\n");
@@ -34,6 +76,6 @@ public class CppFunction {
 
     @Override
     public int hashCode() {
-        return functionName.length() * 31 + functionParameter.size();
+        return name.length() * 31 + parameters.size();
     }
 }

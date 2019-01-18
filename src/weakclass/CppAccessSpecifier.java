@@ -1,7 +1,7 @@
 package weakclass;
 
 public enum CppAccessSpecifier {
-    PRIVATE("\nprivate:\n"), PROTECTED("\nprotected:\n"), PUBLIC("\npublic:\n");
+    PRIVATE("\nprivate:\n"), PROTECTED("\nprotected:\n"), PUBLIC("\npublic:\n"), DEFAULT("\n");
 
     private final String name;
 

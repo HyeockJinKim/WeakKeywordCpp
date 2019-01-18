@@ -1,55 +1,69 @@
 package weakclass;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import java.util.*;
+import java.util.stream.Collectors;
 
-public class CppClass {
-    public String className;
-    public Set<CppClass> superSet;
-    public Set<CppFunction> virtualFunctionSet; // Map
-    public Map<String, ArrayList<ParserRuleContext>> functionMap; // accessspecifier, function
+public class CppClass extends CppNamespace {
+    private Set<CppFunction> functionSet;
+    private Set<CppClass> superSet;
+    private long numOfSuperVirtualFunction;
 
     public CppClass(String className) {
-        this.className = className;
-        this.virtualFunctionSet = new HashSet<>();
+        super(className);
+        this.functionSet = new HashSet<>();
         this.superSet = new HashSet<>();
-        this.functionMap = new TreeMap<>();
-        this.functionMap.put("\n",new ArrayList<>());
-        this.functionMap.put("\nprivate:\n",new ArrayList<>());
-        this.functionMap.put("\npublic:\n",new ArrayList<>());
-        this.functionMap.put("\nprotected:\n",new ArrayList<>());
+        this.numOfSuperVirtualFunction = 0;
     }
 
-    private boolean hasVirtualFunction(CppFunction cppFunction) {
-        for (CppFunction virtual : virtualFunctionSet) {
-            if (virtual.equals(cppFunction)) {
-                return true;
-            }
-        }
-        return false;
+    public CppClass(String className, Stack<String> namespace) {
+        super(className, namespace);
+        this.functionSet = new HashSet<>();
+        this.superSet = new HashSet<>();
     }
 
-    public boolean isVirtual() {
-        for (CppFunction virtual : virtualFunctionSet) {
-            boolean isVirtual = true;
-            for (CppClass superClass : superSet) {
-                if (superClass.hasVirtualFunction(virtual)) {
-                    isVirtual = false;
-                    break;
-                }
-            }
-            if (isVirtual) {
-                return true;
-            }
+    public void addSuperSet(CppClass superClass) {
+        superSet.add(superClass);
+    }
+
+    public Set<CppFunction> getFunctionSet() {
+        return functionSet;
+    }
+
+    public Set<CppFunction> getFunctionSet(CppAccessSpecifier accessSpecifier) {
+        return functionSet.stream()
+                .filter(x -> !x.isVirtual())
+                .filter(x -> x.getAccessSpecifier().equals(accessSpecifier))
+                .collect(Collectors.toSet());
+    }
+
+    public void inheritSuperVirtualFunction() {
+        for (CppClass cppClass : superSet) {
+            cppClass.functionSet.stream()
+                    .filter(CppFunction::isVirtual)
+                    .forEach(this::updateFunction);
         }
-        return false;
+        numOfSuperVirtualFunction = numOfVirtualFunction();
+    }
+
+    public boolean isWeak() {
+        return !superSet.isEmpty() && numOfSuperVirtualFunction != numOfVirtualFunction();
+    }
+
+    private long numOfVirtualFunction() {
+        return functionSet.stream()
+                .filter(CppFunction::isVirtual)
+                .count();
+    }
+
+    public void updateFunction(CppFunction function) {
+        functionSet.remove(function);
+        functionSet.add(function);
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof CppClass) {
-            return className.equals(((CppClass) obj).className);
+            return getFullName().equals(((CppClass) obj).getFullName());
         }
         return false;
     }
@@ -57,20 +71,20 @@ public class CppClass {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(className).append("\nsuper:\n");
+        sb.append(name).append("\nsuper:\n");
         for (CppClass superClass : superSet) {
             sb.append(superClass.toString());
         }
         sb.append("virtual:\n");
-        for (CppFunction cppFunction : virtualFunctionSet) {
-            sb.append(cppFunction.toString());
-        }
+        functionSet.stream()
+                .filter(CppFunction::isVirtual)
+                .forEach(x -> sb.append(x.toString()));
         sb.append("\n");
         return sb.toString();
     }
 
     @Override
     public int hashCode() {
-        return className.length();
+        return (int) (name.length()*31 + numOfVirtualFunction() * 29);
     }
 }
