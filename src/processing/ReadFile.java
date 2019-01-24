@@ -1,13 +1,13 @@
 package processing;
 
+import processing.util.IO;
+
 import java.io.*;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class ReadFile {
-    private static String baseDir;
-    private static String log;
     private static ArrayList<String> passList;
 
     /**
@@ -22,7 +22,7 @@ public class ReadFile {
                 throw new IOException("NO File Input");
 
             setArgsDefault(path);
-            readLog();
+            passList = IO.readLog();
             readDirectoryRecursively(path);
         } else {
             throw new IOException("No Args Input");
@@ -57,37 +57,15 @@ public class ReadFile {
      * @param path Default value for baseDir, writeLog
      */
     private static void setArgsDefault(String path) {
-        if (baseDir == null) {
-            baseDir = path;
-        }
+        IO.setBaseDir(path);
 
-        if (log == null) {
-            if (new File(baseDir).isDirectory()) {
-                log = Paths.get(baseDir, "writeLog").toString();
-            } else {
-                log = Paths.get(Paths.get(baseDir).getParent().toString(), "writeLog").toString();
-            }
+        if (new File(path).isDirectory()) {
+            IO.setLogDir(Paths.get(path, "writeLog").toString());
+        } else {
+            IO.setLogDir(Paths.get(Paths.get(path).getParent().toString(), "writeLog").toString());
         }
     }
 
-    /**
-     * Read written Log and add it to pass list
-     */
-    private static void readLog() {
-        passList = new ArrayList<>();
-        if (!new File(log).exists())
-            return ;
-
-        try (BufferedReader br = new BufferedReader(new FileReader(log))) {
-            String path;
-            while ((path = br.readLine()) != null) {
-                passList.add(path);
-            }
-            System.out.println(passList.size() + " File Pass");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     /**
      * Read Args and set options
@@ -102,28 +80,14 @@ public class ReadFile {
         switch (arg1.substring(1)) {
             case "-basedir":
             case "b":
-                baseDir = arg2;
+                IO.setBaseDir(arg2);
                 break;
             case "-log":
             case "l":
-                log = arg2;
+                IO.setLogDir(arg2);
                 break;
             default:
                 break;
-        }
-    }
-
-    /**
-     * FIXME: Make log directory and logging in the directory
-     * Write Log
-     * @param fileName File name for Logging
-     */
-    private static void writeLog(String fileName) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(log, true))) {
-            bw.write(fileName);
-            bw.newLine();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -138,7 +102,7 @@ public class ReadFile {
         try {
             Converter converter = new Converter(filePath);
             if (converter.convert())
-                writeLog(filePath);
+                IO.writeLog(filePath);
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("No input path.");
         } catch (NullPointerException e) {
@@ -178,13 +142,5 @@ public class ReadFile {
                 || file.getPath().endsWith(".h")) {
             convertCcFile(file.getPath());
         }
-    }
-
-    /**
-     * Get base directory
-     * @return Base directory
-     */
-    public static String getBaseDir() {
-        return baseDir;
     }
 }
