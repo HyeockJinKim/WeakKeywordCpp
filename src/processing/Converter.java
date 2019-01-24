@@ -105,7 +105,7 @@ public class Converter {
      * Parse file for saving class information
      * @param filePath File path for parsing
      */
-    private void parseClass(String filePath) {
+    private Optional<String> parseClass(String filePath) {
         try {
             CPP14Lexer lexer = new CPP14Lexer(CharStreams.fromFileName(filePath));
             CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -114,11 +114,14 @@ public class Converter {
 
             ClassVisitor visitor = new ClassVisitor(tokens, classSet);
             visitor.visit(tree);
-            System.out.println(visitor.getFullText());
+
             classSet.addAll(visitor.getClassSet());
+            return Optional.ofNullable(visitor.getFullText());
         } catch (IOException e) {
             System.out.println("File Input is not correct");
         }
+
+        return Optional.empty();
     }
 
     /**
@@ -156,7 +159,8 @@ public class Converter {
         checkModule();
 
         if (hasClass) {
-            parseClass(filePath);
+            Optional<String> result = parseClass(filePath);
+            result.ifPresent(this::rewriteCppFile);
 //            String json = ProcessJson.jsonifyClassSet(classSet);
 //            writeClassInfo(filePath, json);
         }
@@ -209,7 +213,7 @@ public class Converter {
      * @param file .cc file
      */
     private void rewriteCppFile(String file) {
-        try(BufferedWriter bw = new BufferedWriter(new FileWriter(filePath))) {
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter(Paths.get("out", filePath).toString()))) {
             bw.write(file);
             System.out.println(file);
         } catch (IOException e) {
