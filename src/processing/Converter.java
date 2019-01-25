@@ -25,7 +25,7 @@ public class Converter {
      * Constructor for converter
      * @param filePath File path for set path
      */
-    Converter(String filePath) {
+    public Converter(String filePath) {
         this.filePath = filePath;
     }
 
@@ -34,7 +34,7 @@ public class Converter {
      * Convert .cc file if code has class or static_cast
      * If module wasn't parsed, parse it
      */
-    boolean convert() {
+    public boolean convert() {
         classSet = new HashSet<>();
 
         /* Check hasClass, hasStaticCast */
@@ -44,8 +44,6 @@ public class Converter {
         if (checker.isHasClass()) {
             Optional<String> result = Parsing.parseClass(filePath, classSet);
             result.ifPresent(x -> IO.rewriteCppFile(filePath, x));
-//            String json = ProcessJson.jsonifyClassSet(classSet);
-//            writeClassInfo(filePath, json);
         }
 
         if (checker.isHasStaticCast()) {

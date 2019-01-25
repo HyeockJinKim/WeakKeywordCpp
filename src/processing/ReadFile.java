@@ -40,7 +40,7 @@ public class ReadFile {
         String path = null;
         for (int i = 0; i < args.length; ++i) {
             if (args[i].startsWith("-")) {
-                setOption(args[i], args[i+1]);
+                setOption(args[i], args.length != i+1 ? args[i+1] : args[i]);
                 ++i;
             } else {
                 if (path == null)
@@ -57,7 +57,7 @@ public class ReadFile {
      * @param path Default value for baseDir, writeLog
      */
     private static void setArgsDefault(String path) {
-        IO.setBaseDir(path);
+        IO.setDefaultDir(path);
 
         if (new File(path).isDirectory()) {
             IO.setLogDir(Paths.get(path, "writeLog").toString());
@@ -82,9 +82,21 @@ public class ReadFile {
             case "b":
                 IO.setBaseDir(arg2);
                 break;
+            case "-debug":
+            case "d":
+                IO.setDebug();
+                break;
+            case "-info":
+            case "i":
+                IO.setInfoDir(arg2);
+                break;
             case "-log":
             case "l":
                 IO.setLogDir(arg2);
+                break;
+            case "-out":
+            case "o":
+                IO.setOutDir(arg2);
                 break;
             default:
                 break;
@@ -130,6 +142,13 @@ public class ReadFile {
         }
     }
 
+    private static boolean isDebugCheck(String fileName) {
+        return IO.isDebug &&
+                (fileName.endsWith("-expected.cpp")
+                        || fileName.endsWith("-expected.c++")
+                        || fileName.endsWith("-expected.cc"));
+    }
+
     /**
      * Check this file is .cc file and convert it
      * @param file File for checking
@@ -140,6 +159,8 @@ public class ReadFile {
                 || file.getPath().endsWith(".cpp")
                 || file.getPath().endsWith(".c++")
                 || file.getPath().endsWith(".h")) {
+            if (isDebugCheck(file.getName()))
+                return ;
             convertCcFile(file.getPath());
         }
     }

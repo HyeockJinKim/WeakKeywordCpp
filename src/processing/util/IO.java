@@ -8,9 +8,11 @@ import java.util.ArrayList;
 
 public class IO {
     private static IO ourInstance = new IO();
+    public static boolean isDebug = false;
     private static String baseDir = null;
     private static String log = null;
     private static String out = null;
+    private static String info = null;
     public static IO getInstance() {
         return ourInstance;
     }
@@ -18,16 +20,36 @@ public class IO {
     private IO() {
     }
 
+    public static void setDebug() {
+        IO.isDebug = true;
+    }
+
     public static void setLogDir(String log) {
         if (IO.log == null)
             IO.log = log;
     }
 
+    public static void setInfoDir(String info) {
+        if (IO.info == null)
+            IO.info = info;
+    }
+
+    public static void setOutDir(String out) {
+        if (IO.out == null)
+            IO.out = out;
+    }
+
     public static void setBaseDir(String baseDir) {
         if (IO.baseDir == null) {
             IO.baseDir = baseDir;
-            IO.out = Paths.get("out_folder").toString();
         }
+    }
+
+    public static void setDefaultDir(String baseDir) {
+        if (IO.baseDir == null)
+            IO.baseDir = baseDir;
+        setInfoDir(Paths.get(baseDir,"info").toString());
+        setOutDir(Paths.get(baseDir, "out_folder").toString());
     }
 
     /**
@@ -36,10 +58,10 @@ public class IO {
      * @return Class information file's path
      */
     public static String getClassInfoFilePath(String filePath) {
-        return Paths.get(baseDir, log, filePath+".info").toString();
+        return Paths.get(info, filePath).toString();
     }
 
-    public static String getFullPath(String filePath) {
+    static String getFullPath(String filePath) {
         return Paths.get(baseDir, filePath).toString();
     }
 
@@ -52,7 +74,7 @@ public class IO {
      */
     public static ArrayList<String> readLog() {
         ArrayList<String> passList = new ArrayList<>();
-        if (!new File(log).exists())
+        if (!new File(log).exists() || isDebug)
             return passList;
 
         try (BufferedReader br = new BufferedReader(new FileReader(log))) {
@@ -73,13 +95,16 @@ public class IO {
      * @param file .cc file
      */
     public static void rewriteCppFile(String filePath, String file) {
-        new File(Paths.get(out, filePath).toString()).getParentFile().mkdirs();
-        try(BufferedWriter bw = new BufferedWriter(new FileWriter(Paths.get(out, filePath).toString()))) {
+        makeDictionaries(getOutPath(filePath));
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter(getOutPath(filePath)))) {
             bw.write(file);
-            System.out.println(file);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void makeDictionaries(String filePath) {
+        new File(filePath).getParentFile().mkdirs();
     }
 
     /**
@@ -88,7 +113,7 @@ public class IO {
      * @param classInfo Class information stored in JSON
      */
     public static void writeClassInfo(String filePath, String classInfo) {
-        new File(getClassInfoFilePath(filePath)).getParentFile().mkdirs();
+        makeDictionaries(getClassInfoFilePath(filePath));
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(getClassInfoFilePath(filePath)))) {
             bw.write(classInfo);
         } catch (IOException e) {
@@ -102,6 +127,8 @@ public class IO {
      * @param fileName File name for Logging
      */
     public static void writeLog(String fileName) {
+        if (isDebug)
+            return ;
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(log, true))) {
             bw.write(fileName);
             bw.newLine();
