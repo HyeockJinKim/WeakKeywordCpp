@@ -5,12 +5,14 @@ import java.util.stream.Collectors;
 
 public class CppClass extends CppNamespace {
     private Set<CppFunction> functionSet;
+    private Set<CppMember> memberSet;
     private Set<CppClass> superSet;
     private long numOfSuperVirtualFunction;
 
     public CppClass(String className) {
         super(className);
         this.functionSet = new HashSet<>();
+        this.memberSet = new HashSet<>();
         this.superSet = new HashSet<>();
         this.numOfSuperVirtualFunction = 0;
     }
@@ -18,6 +20,7 @@ public class CppClass extends CppNamespace {
     public CppClass(String className, Stack<String> namespace) {
         super(className, namespace);
         this.functionSet = new HashSet<>();
+        this.memberSet = new HashSet<>();
         this.superSet = new HashSet<>();
     }
 
@@ -25,14 +28,23 @@ public class CppClass extends CppNamespace {
         superSet.add(superClass);
     }
 
-    public Set<CppFunction> getFunctionSet() {
-        return functionSet;
-    }
-
     public Set<CppFunction> getFunctionSet(CppAccessSpecifier accessSpecifier) {
         return functionSet.stream()
                 .filter(x -> !x.isVirtual())
-                .filter(x -> x.getAccessSpecifier().equals(accessSpecifier))
+                .filter(x -> x.accessSpecifier.equals(accessSpecifier))
+                .collect(Collectors.toSet());
+    }
+
+    public Set<CppMember> getMemberSet(CppAccessSpecifier accessSpecifier) {
+        return memberSet.stream()
+                .filter(x -> x.accessSpecifier.equals(accessSpecifier))
+                .collect(Collectors.toSet());
+    }
+
+    public Set<CppFunction> getVirtualFunctionSet(CppAccessSpecifier accessSpecifier) {
+        return functionSet.stream()
+                .filter(CppFunction::isVirtual)
+                .filter(x -> x.accessSpecifier.equals(accessSpecifier))
                 .collect(Collectors.toSet());
     }
 
@@ -58,6 +70,11 @@ public class CppClass extends CppNamespace {
     public void updateFunction(CppFunction function) {
         functionSet.remove(function);
         functionSet.add(function);
+    }
+
+    public void updateMember(CppMember member) {
+        memberSet.remove(member);
+        memberSet.add(member);
     }
 
     @Override

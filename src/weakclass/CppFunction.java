@@ -5,31 +5,17 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.ArrayList;
 
-public class CppFunction {
+public class CppFunction extends CppMember {
     private ArrayList<String> parameters;
-    private CppAccessSpecifier accessSpecifier;
-    private ParserRuleContext content;
     private String name;
 
     private boolean isVirtual;
 
     public CppFunction(CppAccessSpecifier accessSpecifier) {
+        super(accessSpecifier);
         this.name = null;
         this.parameters = new ArrayList<>();
-        this.accessSpecifier = accessSpecifier;
         this.content = null;
-    }
-
-    public CppAccessSpecifier getAccessSpecifier() {
-        return accessSpecifier;
-    }
-
-    public String getContent() {
-        return Info.getText(content) + "\n";
-    }
-
-    public ParserRuleContext getContext() {
-        return content;
     }
 
     public void setName(String name) {
@@ -38,10 +24,6 @@ public class CppFunction {
 
     public void setParameters(ArrayList<String> parameters) {
         this.parameters = parameters;
-    }
-
-    public void setContent(ParserRuleContext content) {
-        this.content = content;
     }
 
     @Override
