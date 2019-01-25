@@ -6,6 +6,7 @@ import org.antlr.v4.runtime.TokenStreamRewriter;
 import weakclass.CppAccessSpecifier;
 import weakclass.CppClass;
 import weakclass.CppFunction;
+import weakclass.CppMember;
 
 import java.util.Set;
 
@@ -27,29 +28,7 @@ public class Rewrite {
         reWriter.insertBefore(ctx.stop, "_");
     }
 
-    private static String copyMember(TokenStreamRewriter reWriter, ParserRuleContext ctx) {
-        reWriter.replace(ctx.start, ctx.stop, "");
-        return Info.getText(ctx) + "\n";
-    }
-
-    public static void reWriteMember(CppClass currentClass, StringBuilder sb, TokenStreamRewriter reWriter) {
-        for (CppAccessSpecifier cppAccessSpecifier : CppAccessSpecifier.values()) {
-            Set<CppFunction> functionSet = currentClass.getFunctionSet(cppAccessSpecifier);
-            if (!functionSet.isEmpty()) {
-                sb.append(cppAccessSpecifier.getName());
-                if (cppAccessSpecifier == CppAccessSpecifier.PRIVATE) {
-                    functionSet.stream()
-                            .map(x -> copyMember(reWriter, x.getContext()))
-                            .forEach(sb::append);
-                } else {
-                    functionSet.stream()
-                            .map(CppFunction::getContent)
-                            .forEach(sb::append);
-                }
-            }
-        }
-    }
-    private static void reWriteClassHead(StringBuilder sb, CPP14Parser.ClassspecifierContext ctx) {
+    private static void reWriteTempClassHead(StringBuilder sb, CPP14Parser.ClassspecifierContext ctx) {
         sb.append(Info.getText(ctx.classhead().classkey()))
                 .append(" _")
                 .append(Info.getText(ctx.classhead().classheadname()))
@@ -58,12 +37,62 @@ public class Rewrite {
                 .append(" {");
     }
 
-    private static void reWriteTempClass(StringBuilder sb, CPP14Parser.ClassspecifierContext ctx, TokenStreamRewriter reWriter) {
-        sb.append("\n};\n\n");
-        reWriter.replace(ctx.classhead().baseclause().start,
-                ctx.classhead().baseclause().stop,
-                ": public _" + Info.getText(ctx.classhead().classheadname()));
-        reWriter.insertBefore(ctx.start, sb.toString());
+    private static void reWriteTempClassMember(CppClass currentClass, StringBuilder sb) {
+        for (CppAccessSpecifier cppAccessSpecifier : CppAccessSpecifier.values()) {
+            Set<CppFunction> functionSet = currentClass.getFunctionSet(cppAccessSpecifier);
+            Set<CppMember> memberSet = currentClass.getMemberSet(cppAccessSpecifier);
+            if (!functionSet.isEmpty() || !memberSet.isEmpty()) {
+                sb.append(cppAccessSpecifier.getName());
+
+                memberSet.stream()
+                        .map(CppMember::getContent)
+                        .forEach(sb::append);
+
+                functionSet.stream()
+                        .map(CppFunction::getContent)
+                        .forEach(sb::append);
+            }
+        }
+        sb.append("};\n\n");
+    }
+
+    private static void reWriteBaseClassHead(StringBuilder sb, CPP14Parser.ClassspecifierContext ctx) {
+        sb.append(Info.getText(ctx.classhead().classkey()))
+                .append(" ")
+                .append(Info.getText(ctx.classhead().classheadname()))
+                .append(" : public _")
+                .append(Info.getText(ctx.classhead().classheadname()))
+                .append(" {");
+    }
+
+    private static void reWriteBaseClassMember(CppClass currentClass, StringBuilder sb) {
+        for (CppAccessSpecifier cppAccessSpecifier : CppAccessSpecifier.values()) {
+            Set<CppFunction> functionSet = currentClass.getFunctionSet(cppAccessSpecifier);
+            Set<CppMember> memberSet = currentClass.getMemberSet(cppAccessSpecifier);
+            Set<CppFunction> virtualSet = currentClass.getVirtualFunctionSet(cppAccessSpecifier);
+            if (!functionSet.isEmpty() || !memberSet.isEmpty()) {
+                if (cppAccessSpecifier == CppAccessSpecifier.PRIVATE) {
+                    sb.append(cppAccessSpecifier.getName());
+
+                    memberSet.stream()
+                            .map(CppMember::getContent)
+                            .forEach(sb::append);
+
+                    functionSet.stream()
+                            .map(CppFunction::getContent)
+                            .forEach(sb::append);
+                }
+            }
+
+            if (!virtualSet.isEmpty()) {
+                sb.append(cppAccessSpecifier.getName());
+
+                virtualSet.stream()
+                        .map(CppFunction::getContent)
+                        .forEach(sb::append);
+            }
+        }
+        sb.append("}");
     }
 
     public static void reWriteClass(TokenStreamRewriter reWriter, CPP14Parser.ClassspecifierContext ctx, CppClass currentClass) {
@@ -71,9 +100,13 @@ public class Rewrite {
             if (ctx.classhead() != null) {
                 if (currentClass.isWeak()) {
                     StringBuilder tempClass = new StringBuilder();
-                    reWriteClassHead(tempClass, ctx);
-                    reWriteMember(currentClass, tempClass, reWriter);
-                    reWriteTempClass(tempClass, ctx, reWriter);
+                    reWriteTempClassHead(tempClass, ctx);
+                    reWriteTempClassMember(currentClass, tempClass);
+
+                    reWriteBaseClassHead(tempClass, ctx);
+                    reWriteBaseClassMember(currentClass, tempClass);
+
+                    reWriter.replace(ctx.start, ctx.stop, tempClass.toString());
                 }
             }
         }

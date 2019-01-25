@@ -7,6 +7,7 @@ import grammar.antlr.CPP14Parser;
 import org.antlr.v4.runtime.TokenStreamRewriter;
 import weakclass.CppClass;
 import weakclass.CppFunction;
+import weakclass.CppMember;
 
 import java.util.Set;
 import java.util.Stack;
@@ -59,6 +60,10 @@ public class ClassInfoVisitor<T> extends CommonVisitor<Void> {
         Set<CppFunction> memberFunctionSet = visitor.visitMemberspecification(ctx);
         for (CppFunction cppFunction : memberFunctionSet) {
             currentClass.updateFunction(cppFunction);
+        }
+        Set<CppMember> memberSet = visitor.getMemberSet();
+        for (CppMember cppMember : memberSet) {
+            currentClass.updateMember(cppMember);
         }
 
         return null;

@@ -15,7 +15,6 @@ import java.util.Stack;
 
 public class Info {
     private static Info ourInstance = new Info();
-
     public static Info getInstance() {
         return ourInstance;
     }
