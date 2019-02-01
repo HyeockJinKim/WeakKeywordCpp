@@ -6,9 +6,11 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import java.util.ArrayList;
 
 public class CppFunction extends CppMember {
+    private String className;
     private ArrayList<String> parameters;
     private String name;
 
+    private boolean isConstructor;
     private boolean isVirtual;
 
     public CppFunction(CppAccessSpecifier accessSpecifier) {
@@ -16,6 +18,21 @@ public class CppFunction extends CppMember {
         this.name = null;
         this.parameters = new ArrayList<>();
         this.content = null;
+    }
+
+
+    void setClassName(String className) {
+        if (className.equals(name))
+            this.isConstructor = true;
+        this.className = className;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public boolean isConstructor() {
+        return isConstructor;
     }
 
     public void setName(String name) {

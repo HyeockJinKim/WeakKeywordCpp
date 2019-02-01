@@ -29,7 +29,7 @@ public class ExampleTest {
                 List<String> expected = Files.readAllLines(Paths.get(getExpectedFilePath(file.toString())));
 
                 assertEquals(expected, actual);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 fail();
             }
         }

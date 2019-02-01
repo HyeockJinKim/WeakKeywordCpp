@@ -1,7 +1,7 @@
 class A {
 public:
     virtual void func() {
-    }
+}
 };
 
 int main() {

@@ -18,7 +18,6 @@ import java.util.Set;
 
 
 public class Converter {
-    private Set<CppClass> classSet;
     private String filePath;
 
     /**
@@ -35,7 +34,7 @@ public class Converter {
      * If module wasn't parsed, parse it
      */
     public boolean convert() {
-        classSet = new HashSet<>();
+        Set<CppClass> classSet = new HashSet<>();
 
         /* Check hasClass, hasStaticCast */
         Checker checker = new Checker(filePath);
@@ -45,7 +44,7 @@ public class Converter {
             Optional<String> result = Parsing.parseClass(filePath, classSet);
             result.ifPresent(x -> IO.rewriteCppFile(filePath, x));
         }
-
+        IO.writeClassInfo(filePath, classSet);
         if (checker.isHasStaticCast()) {
             Optional<String> result = Parsing.parseStaticCast(Paths.get(filePath).toString(), classSet);
             result.ifPresent(x -> IO.rewriteCppFile(filePath, x));

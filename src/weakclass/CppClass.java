@@ -44,6 +44,7 @@ public class CppClass extends CppNamespace {
     public Set<CppFunction> getVirtualFunctionSet(CppAccessSpecifier accessSpecifier) {
         return functionSet.stream()
                 .filter(CppFunction::isVirtual)
+                .filter(this::isMyFunction)
                 .filter(x -> x.accessSpecifier.equals(accessSpecifier))
                 .collect(Collectors.toSet());
     }
@@ -52,9 +53,13 @@ public class CppClass extends CppNamespace {
         for (CppClass cppClass : superSet) {
             cppClass.functionSet.stream()
                     .filter(CppFunction::isVirtual)
-                    .forEach(this::updateFunction);
+                    .forEach(functionSet::add);
         }
         numOfSuperVirtualFunction = numOfVirtualFunction();
+    }
+
+    private boolean isMyFunction(CppFunction function) {
+        return function.getClassName().equals(name);
     }
 
     public boolean isWeak() {
@@ -68,6 +73,9 @@ public class CppClass extends CppNamespace {
     }
 
     public void updateFunction(CppFunction function) {
+        function.setClassName(name);
+        if (function.isConstructor())
+            return;
         functionSet.remove(function);
         functionSet.add(function);
     }

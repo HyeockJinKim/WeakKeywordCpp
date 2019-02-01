@@ -1,10 +1,12 @@
 package processing.util;
 
 import processing.ReadFile;
+import weakclass.CppClass;
 
 import java.io.*;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Set;
 
 public class IO {
     private static IO ourInstance = new IO();
@@ -112,13 +114,17 @@ public class IO {
      * @param filePath FilePath for logging
      * @param classInfo Class information stored in JSON
      */
-    public static void writeClassInfo(String filePath, String classInfo) {
+    public static void writeClassInfo(String filePath, Set<CppClass> classInfo) {
         makeDictionaries(getClassInfoFilePath(filePath));
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(getClassInfoFilePath(filePath)))) {
-            bw.write(classInfo);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try (BufferedWriter bw = new BufferedWriter(new FileWriter(getClassInfoFilePath(filePath)))) {
+//            bw.write(classInfo(classInfo));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+    }
+
+    public static String classInfo(Set<CppClass> classInfo) {
+        return "";
     }
 
     /**

@@ -53,14 +53,14 @@ public class MemberVisitor<T> extends CommonVisitor<HashSet<CppFunction>> {
 
     @Override
     public HashSet<CppFunction> visitMemberdeclaration(CPP14Parser.MemberdeclarationContext ctx) {
+        super.visitMemberdeclaration(ctx);
+
         if (ctx.functiondefinition() == null) {
             CppMember currentMember = new CppMember(currentAccessSpecifier);
             currentMember.setContent(ctx);
             memberSet.add(currentMember);
 
-            return null;
         }
-        super.visitMemberdeclaration(ctx);
 
         return null;
     }
@@ -75,6 +75,11 @@ public class MemberVisitor<T> extends CommonVisitor<HashSet<CppFunction>> {
     public HashSet<CppFunction> visitParametersandqualifiers(CPP14Parser.ParametersandqualifiersContext ctx) {
         ParamVisitor<ArrayList<String>> visitor = new ParamVisitor<>();
         currentFunction.setParameters(visitor.visitParametersandqualifiers(ctx));
+        return null;
+    }
+
+    @Override
+    public HashSet<CppFunction> visitFunctionbody(CPP14Parser.FunctionbodyContext ctx) {
         return null;
     }
 
