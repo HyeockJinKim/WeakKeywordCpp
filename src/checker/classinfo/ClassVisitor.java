@@ -6,20 +6,17 @@ import grammar.antlr.CPP14Parser;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStreamRewriter;
 import weakclass.CppClass;
-import java.util.Set;
+
+import java.util.LinkedHashSet;
 
 public class ClassVisitor<T> extends CommonVisitor<Void> {
-    private Set<CppClass> classSet;
-    private boolean isParam;
-    private boolean isVirtual;
-    private boolean isBaseClause;
-
+    private LinkedHashSet<CppClass> classSet;
     /**
      * Constructor for ClassVisitor
      * @param tokens Token stream for parsing
      * @param classSet Class information
      */
-    public ClassVisitor(CommonTokenStream tokens, Set<CppClass> classSet) {
+    public ClassVisitor(CommonTokenStream tokens, LinkedHashSet<CppClass> classSet) {
         super();
         reWriter = new TokenStreamRewriter(tokens);
         this.classSet = classSet;
@@ -36,7 +33,7 @@ public class ClassVisitor<T> extends CommonVisitor<Void> {
         return null;
     }
 
-    public Set<CppClass> getClassSet() {
+    public LinkedHashSet<CppClass> getClassSet() {
         return this.classSet;
     }
 }

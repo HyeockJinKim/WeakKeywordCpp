@@ -9,7 +9,7 @@ import weakclass.CppClass;
 import weakclass.CppFunction;
 import weakclass.CppMember;
 
-import java.util.Set;
+import java.util.LinkedHashSet;
 import java.util.Stack;
 
 /**
@@ -17,10 +17,10 @@ import java.util.Stack;
  * @param <T>
  */
 public class ClassInfoVisitor<T> extends CommonVisitor<Void> {
-    private Set<CppClass> classSet;
+    private LinkedHashSet<CppClass> classSet;
     private CppClass currentClass;
 
-    public ClassInfoVisitor(TokenStreamRewriter reWriter, Set<CppClass> classSet) {
+    public ClassInfoVisitor(TokenStreamRewriter reWriter, LinkedHashSet<CppClass> classSet) {
         super();
         this.classSet = classSet;
         this.reWriter = reWriter;
@@ -57,25 +57,15 @@ public class ClassInfoVisitor<T> extends CommonVisitor<Void> {
     @Override
     public Void visitMemberspecification(CPP14Parser.MemberspecificationContext ctx) {
         MemberVisitor<CppFunction> visitor = new MemberVisitor<>();
-        Set<CppFunction> memberFunctionSet = visitor.visitMemberspecification(ctx);
+        LinkedHashSet<CppFunction> memberFunctionSet = visitor.visitMemberspecification(ctx);
         for (CppFunction cppFunction : memberFunctionSet) {
             currentClass.updateFunction(cppFunction);
         }
-        Set<CppMember> memberSet = visitor.getMemberSet();
+        LinkedHashSet<CppMember> memberSet = visitor.getMemberSet();
         for (CppMember cppMember : memberSet) {
             currentClass.updateMember(cppMember);
         }
 
         return null;
     }
-
-//    @Override
-//    public Void visitMemberdeclaration(CPP14Parser.MemberdeclarationContext ctx) {
-//        MemberVisitor<CppFunction> visitor = new MemberVisitor<>(currentAccessSpecifier);
-//        CppFunction currentFunction = visitor.visitMemberdeclaration(ctx);
-//        currentClass.updateFunction(currentFunction);
-//
-//        return null;
-//    }
-
 }

@@ -1,10 +1,5 @@
 package processing;
 
-import checker.classinfo.ClassVisitor;
-import checker.cast.StaticCastVisitor;
-import grammar.antlr.CPP14Lexer;
-import grammar.antlr.CPP14Parser;
-import org.antlr.v4.runtime.*;
 import processing.util.Checker;
 import processing.util.IO;
 import processing.util.Parsing;
@@ -12,9 +7,8 @@ import weakclass.CppClass;
 
 import java.io.*;
 import java.nio.file.Paths;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Optional;
-import java.util.Set;
 
 
 public class Converter {
@@ -34,7 +28,7 @@ public class Converter {
      * If module wasn't parsed, parse it
      */
     public boolean convert() {
-        Set<CppClass> classSet = new HashSet<>();
+        LinkedHashSet<CppClass> classSet = new LinkedHashSet<>();
 
         /* Check hasClass, hasStaticCast */
         Checker checker = new Checker(filePath);

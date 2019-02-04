@@ -39,7 +39,8 @@ public class ExampleTest {
     public void TestExampleResult() {
         try {
             ReadFile.read(new String[]{examplePath, "-o", outPath, "--debug"});
-        } catch (IOException | IndexOutOfBoundsException e) {
+        } catch (Exception e) {
+            fail();
             e.printStackTrace();
         }
 

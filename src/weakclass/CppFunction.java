@@ -15,7 +15,7 @@ public class CppFunction extends CppMember {
 
     public CppFunction(CppAccessSpecifier accessSpecifier) {
         super(accessSpecifier);
-        this.name = null;
+        this.name = "";
         this.parameters = new ArrayList<>();
         this.content = null;
     }
@@ -29,10 +29,6 @@ public class CppFunction extends CppMember {
 
     public String getClassName() {
         return className;
-    }
-
-    public boolean isConstructor() {
-        return isConstructor;
     }
 
     public void setName(String name) {
@@ -58,6 +54,10 @@ public class CppFunction extends CppMember {
 
     public boolean isVirtual() {
         return isVirtual;
+    }
+
+    public boolean isNoStatic() {
+        return isVirtual || isConstructor;
     }
 
     @Override

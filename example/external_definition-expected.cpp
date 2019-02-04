@@ -13,6 +13,7 @@ class B : public _B {
 private:
     int num;
     void g();
+
 public:
     virtual void f();
 };

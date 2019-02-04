@@ -1,7 +1,6 @@
 package checker.util;
 
 import grammar.antlr.CPP14Parser;
-import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.TokenStreamRewriter;
 import weakclass.CppAccessSpecifier;
 import weakclass.CppClass;
@@ -43,14 +42,7 @@ public class Rewrite {
             Set<CppMember> memberSet = currentClass.getMemberSet(cppAccessSpecifier);
             if (!functionSet.isEmpty() || !memberSet.isEmpty()) {
                 sb.append(cppAccessSpecifier.getName());
-
-                memberSet.stream()
-                        .map(CppMember::getContent)
-                        .forEach(sb::append);
-
-                functionSet.stream()
-                        .map(CppFunction::getContent)
-                        .forEach(sb::append);
+                reWriteMember(memberSet, functionSet, sb);
             }
         }
         sb.append("};\n\n");
@@ -66,24 +58,21 @@ public class Rewrite {
     }
 
     private static void reWriteBaseClassMember(CppClass currentClass, StringBuilder sb) {
-        for (CppAccessSpecifier cppAccessSpecifier : CppAccessSpecifier.values()) {
-            Set<CppFunction> functionSet = currentClass.getFunctionSet(cppAccessSpecifier);
-            Set<CppMember> memberSet = currentClass.getMemberSet(cppAccessSpecifier);
-            Set<CppFunction> virtualSet = currentClass.getVirtualFunctionSet(cppAccessSpecifier);
-            if (!functionSet.isEmpty() || !memberSet.isEmpty()) {
-                if (cppAccessSpecifier == CppAccessSpecifier.PRIVATE) {
-                    sb.append(cppAccessSpecifier.getName());
 
-                    memberSet.stream()
-                            .map(CppMember::getContent)
-                            .forEach(sb::append);
+        Set<CppFunction> functionSet = currentClass.getFunctionSet(CppAccessSpecifier.PRIVATE);
+        Set<CppMember> memberSet = currentClass.getMemberSet(CppAccessSpecifier.PRIVATE);
+        Set<CppFunction> virtualSet = currentClass.getVirtualFunctionSet(CppAccessSpecifier.PRIVATE);
 
-                    functionSet.stream()
-                            .map(CppFunction::getContent)
-                            .forEach(sb::append);
-                }
-            }
+        if (!functionSet.isEmpty() || !memberSet.isEmpty()) {
+            sb.append(CppAccessSpecifier.PRIVATE.getName());
+            reWriteMember(memberSet, functionSet, sb);
+            virtualSet.stream()
+                    .map(CppFunction::getContent)
+                    .forEach(sb::append);
+        }
 
+        for (CppAccessSpecifier cppAccessSpecifier : CppAccessSpecifier.nonPrivate()) {
+            virtualSet = currentClass.getVirtualFunctionSet(cppAccessSpecifier);
             if (!virtualSet.isEmpty()) {
                 sb.append(cppAccessSpecifier.getName());
 
@@ -93,6 +82,16 @@ public class Rewrite {
             }
         }
         sb.append("}");
+    }
+
+    private static void reWriteMember(Set<CppMember> memberSet, Set<CppFunction> functionSet, StringBuilder sb) {
+        memberSet.stream()
+                .map(CppMember::getContent)
+                .forEach(sb::append);
+
+        functionSet.stream()
+                .map(CppFunction::getContent)
+                .forEach(sb::append);
     }
 
     public static void reWriteClass(TokenStreamRewriter reWriter, CPP14Parser.ClassspecifierContext ctx, CppClass currentClass) {

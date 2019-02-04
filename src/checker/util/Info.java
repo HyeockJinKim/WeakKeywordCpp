@@ -8,10 +8,7 @@ import org.antlr.v4.runtime.misc.Interval;
 import weakclass.CppAccessSpecifier;
 import weakclass.CppClass;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 
 public class Info {
     private static Info ourInstance = new Info();
@@ -26,7 +23,7 @@ public class Info {
         return null;
     }
 
-    public static void checkClass(TokenStreamRewriter reWriter, Set<CppClass> classSet, CPP14Parser.ClassspecifierContext ctx) {
+    public static void checkClass(TokenStreamRewriter reWriter, LinkedHashSet<CppClass> classSet, CPP14Parser.ClassspecifierContext ctx) {
         ClassInfoVisitor visitor = new ClassInfoVisitor(reWriter, classSet);
         visitor.visitClassspecifier(ctx);
     }
@@ -80,11 +77,9 @@ public class Info {
 //        }
 //    }
 
-    public static String getFunctionName(CPP14Parser.FunctiondefinitionContext ctx) {
-        return getText(ctx.declarator()
-                .ptrdeclarator())
-                .replace("*", "")
-                .split("[\\(]")[0];
+    public static String getFunctionName(CPP14Parser.ParametersandqualifiersContext ctx) {
+        return getText(ctx.getParent())
+                .split("[(]")[0];
     }
 
     public static String getTypeId(CPP14Parser.ThetypeidContext ctx) {
