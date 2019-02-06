@@ -27,12 +27,16 @@ public class CppFunction extends CppMember {
         this.className = className;
     }
 
-    public String getClassName() {
+    String getClassName() {
         return className;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    boolean equals(String name, ArrayList<String> params) {
+        return this.name.equals(name) && this.parameters.equals(params);
     }
 
     public void setParameters(ArrayList<String> parameters) {
@@ -54,6 +58,10 @@ public class CppFunction extends CppMember {
 
     public boolean isVirtual() {
         return isVirtual;
+    }
+
+    public boolean isPrivate() {
+        return accessSpecifier == CppAccessSpecifier.PRIVATE;
     }
 
     public boolean isNoStatic() {

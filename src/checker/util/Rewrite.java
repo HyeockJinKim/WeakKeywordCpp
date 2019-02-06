@@ -1,6 +1,7 @@
 package checker.util;
 
 import grammar.antlr.CPP14Parser;
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.TokenStreamRewriter;
 import weakclass.CppAccessSpecifier;
 import weakclass.CppClass;
@@ -16,8 +17,11 @@ public class Rewrite {
         return ourInstance;
     }
 
-    private Rewrite() {
-    }
+    private Rewrite() {}
+
+    /**
+     * In order to rewrite static_cast, Use the following functions.
+     */
 
     public static void castTempClass(TokenStreamRewriter reWriter, CPP14Parser.PostfixexpressionContext ctx) {
         reWriter.insertBefore(ctx.thetypeid().start, "_");
@@ -26,6 +30,23 @@ public class Rewrite {
     public static void castLimited(TokenStreamRewriter reWriter, CPP14Parser.IdexpressionContext ctx) {
         reWriter.insertBefore(ctx.stop, "_");
     }
+
+    /**
+     * In order to rewrite function, Use the following function.
+     */
+
+    public static void reWriteFunctionName(TokenStreamRewriter reWriter, ParserRuleContext nameContext,  ParserRuleContext functionContext, CppFunction function) {
+        reWriter.replace(nameContext.start, nameContext.stop, Info.getTempClassNameOfFunction(Info.getText(nameContext)));
+        if (function.isPrivate()) {
+            reWriter.insertAfter(functionContext.stop, "\n\n");
+            reWriter.insertAfter(functionContext.stop, Info.getText(functionContext));
+        }
+    }
+
+
+    /**
+     * In order to rewrite class, Use the following functions.
+     */
 
     private static void reWriteTempClassHead(StringBuilder sb, CPP14Parser.ClassspecifierContext ctx) {
         sb.append(Info.getText(ctx.classhead().classkey()))

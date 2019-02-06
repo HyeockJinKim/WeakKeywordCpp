@@ -1,12 +1,12 @@
 package checker.classinfo;
 
+import checker.CommonVisitor;
 import checker.util.Info;
-import grammar.antlr.CPP14BaseVisitor;
 import grammar.antlr.CPP14Parser;
 
 import java.util.ArrayList;
 
-public class ParamVisitor<T> extends CPP14BaseVisitor<ArrayList<String>> {
+public class ParamVisitor<T> extends CommonVisitor<ArrayList<String>> {
     private ArrayList<String> paramList;
 
     ParamVisitor() {

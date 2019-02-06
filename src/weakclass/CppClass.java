@@ -58,8 +58,15 @@ public class CppClass extends CppNamespace {
         numOfSuperVirtualFunction = numOfVirtualFunction();
     }
 
+    public Optional<CppFunction> findFunction(String functionName, ArrayList<String> params) {
+        return functionSet.stream()
+                .filter(x -> !x.isNoStatic())
+                .filter(x -> x.equals(functionName, params))
+                .findAny();
+    }
+
     private boolean isMyFunction(CppFunction function) {
-        return function.getClassName().equals(name);
+        return function.getClassName().equals(getFullName());
     }
 
     public boolean isWeak() {
@@ -73,7 +80,7 @@ public class CppClass extends CppNamespace {
     }
 
     public void updateFunction(CppFunction function) {
-        function.setClassName(name);
+        function.setClassName(getFullName());
         functionSet.remove(function);
         functionSet.add(function);
     }
@@ -89,6 +96,10 @@ public class CppClass extends CppNamespace {
             return getFullName().equals(((CppClass) obj).getFullName());
         }
         return false;
+    }
+
+    public boolean equals(String name) {
+        return getFullName().equals(name);
     }
 
     @Override

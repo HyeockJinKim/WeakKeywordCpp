@@ -67,7 +67,7 @@ public class MemberVisitor<T> extends CommonVisitor<LinkedHashSet<CppFunction>> 
     public LinkedHashSet<CppFunction> visitParametersandqualifiers(CPP14Parser.ParametersandqualifiersContext ctx) {
         ParamVisitor<ArrayList<String>> visitor = new ParamVisitor<>();
         currentFunction.setParameters(visitor.visitParametersandqualifiers(ctx));
-        currentFunction.setName(Info.getFunctionName(ctx));
+        currentFunction.setName(Info.getFunctionName(ctx.getParent()));
         functionSet.add(currentFunction);
         isFunction = true;
         return null;

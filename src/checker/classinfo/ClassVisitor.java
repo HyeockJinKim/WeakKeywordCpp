@@ -23,13 +23,20 @@ public class ClassVisitor<T> extends CommonVisitor<Void> {
     }
 
     /**
-     *
+     * Class Converter
      * @param ctx
      */
     @Override
     public Void visitClassspecifier(CPP14Parser.ClassspecifierContext ctx) {
         // Ignore Nested Class !!
         Info.checkClass(reWriter, classSet, ctx);
+        return null;
+    }
+
+    @Override
+    public Void visitFunctiondefinition(CPP14Parser.FunctiondefinitionContext ctx) {
+        FunctionVisitor visitor = new FunctionVisitor(reWriter, classSet);
+        visitor.visitFunctiondefinition(ctx);
         return null;
     }
 

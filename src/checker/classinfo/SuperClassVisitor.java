@@ -1,11 +1,11 @@
 package checker.classinfo;
 
-import grammar.antlr.CPP14BaseVisitor;
+import checker.CommonVisitor;
 import grammar.antlr.CPP14Parser;
 import weakclass.CppClass;
 import java.util.Set;
 
-public class SuperClassVisitor<T> extends CPP14BaseVisitor<Void> {
+public class SuperClassVisitor<T> extends CommonVisitor<Void> {
     private Set<CppClass> classSet;
     private CppClass currentClass;
 

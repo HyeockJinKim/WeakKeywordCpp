@@ -51,6 +51,44 @@ public class Info {
                 return CppAccessSpecifier.DEFAULT;
         }
     }
+    public static String getTempClassNameOfFunction(String className) {
+        String[] temp = className.split("::");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < temp.length-2; ++i) {
+            sb.append(temp[i]).append("::");
+        }
+        sb.append("_").append(temp[temp.length-2]);
+        sb.append("::").append(temp[temp.length-1]);
+        return sb.toString();
+    }
+
+    public static String getTempClassNameOfClass(String className) {
+        String[] temp = className.split("::");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < temp.length-1; ++i) {
+            sb.append(temp[i]).append("::");
+        }
+        sb.append("_").append(temp[temp.length-1]);
+        return sb.toString();
+    }
+
+    public static String getClassNameOfFunction(String functionName) {
+        String[] names = functionName.split("::");
+        if (names.length > 1) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < names.length - 2; ++i) {
+                sb.append(names[i]).append("::");
+            }
+            sb.append(names[names.length-2]);
+            return sb.toString();
+        }
+        return null;
+    }
+
+    public static String getFunctionNameOfFunction(String functionName) {
+        String[] names = functionName.split("::");
+        return names[names.length-1];
+    }
 
     public static String getFullName(String name, HashMap<String, String> usingMap) {
         for (String usingName : usingMap.keySet()) {
@@ -77,8 +115,8 @@ public class Info {
 //        }
 //    }
 
-    public static String getFunctionName(CPP14Parser.ParametersandqualifiersContext ctx) {
-        return getText(ctx.getParent())
+    public static String getFunctionName(ParserRuleContext ctx) {
+        return getText(ctx)
                 .split("[(]")[0];
     }
 
