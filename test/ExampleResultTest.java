@@ -13,7 +13,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ExampleResultTest {
     private static final String rootPath = Paths.get(".").toString();
     private static final String examplePath = Paths.get(rootPath,"example").toString();
-    private static final String outPath = Paths.get(rootPath, "test_out", "example").toString();
+    private static final String outPath = Paths.get(rootPath, "test_out").toString();
+    private static final String infoPath = Paths.get(rootPath, "test_out", "info").toString();
 
     public static String getExpectedFilePath(String filePath) {
         return filePath.replace("test_out/", "")
@@ -25,9 +26,9 @@ public class ExampleResultTest {
     private void TestResult(String filename) {
         try {
             String filePath = Paths.get(examplePath, filename).toString();
-            ReadFile.read(new String[]{filePath, "-o", outPath, "--debug"});
+            ReadFile.read(new String[]{filePath, "--basedir", examplePath, "-o", outPath, "--info", infoPath, "--debug"});
             try {
-                File file = new File(Paths.get(outPath, filename).toString());
+                File file = new File(Paths.get(outPath, "example", filename).toString());
                 List<String> actual = Files.readAllLines(file.toPath());
                 List<String> expected = Files.readAllLines(Paths.get(getExpectedFilePath(file.toString())));
 
@@ -36,8 +37,8 @@ public class ExampleResultTest {
                 fail();
             }
         } catch (Exception e) {
-            fail();
             e.printStackTrace();
+            fail();
         }
     }
 
@@ -65,6 +66,12 @@ public class ExampleResultTest {
     void TestExternalDefinitionResult() {
         TestResult("external_definition.cpp");
     }
+
+    @Test
+    void TestIncludeResult() {
+        TestResult("include.cpp");
+    }
+
     @Test
     void TestNonWeakResult() {
         TestResult("nonweak.cpp");
