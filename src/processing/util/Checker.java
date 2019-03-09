@@ -1,5 +1,6 @@
 package processing.util;
 
+import classinfo.ClassReader;
 import processing.ReadFile;
 import weakclass.CppClass;
 
@@ -7,18 +8,21 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 public class Checker {
-    private Set<CppClass> classSet;
+    private HashSet<CppClass> classSet;
     private String filePath;
     private boolean hasClass;
     private boolean hasStaticCast;
     private HashSet<String> moduleSet;
 
     public Checker(String filePath) {
+        this.classSet = new HashSet<>();
         this.filePath = filePath;
     }
 
@@ -28,8 +32,9 @@ public class Checker {
      */
     private void addClassInfo(String module) {
         String classInfoFile = IO.getClassInfoFilePath(module);
-        try (BufferedReader br = new BufferedReader(new FileReader(classInfoFile))) {
-//            classSet.addAll(ProcessJson.readJson(br.readLine()));
+        try {
+            ClassReader reader = new ClassReader(Files.readAllLines(Paths.get(classInfoFile)));
+            classSet.addAll(reader.readClassSet());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -96,13 +101,16 @@ public class Checker {
      */
     private void checkModule() {
         for (String module : moduleSet) {
-            if (new File(IO.getClassInfoFilePath(module)).exists())
-                addClassInfo(module);
-            else {
-                // TODO parseClass require its module's class information
-                Parsing.parseClass(IO.getFullPath(module), null);
+            if (!new File(IO.getClassInfoFilePath(module)).exists()) {
+                Optional<String> result = Parsing.parseClass(IO.getFullPath(module), classSet);
+                result.ifPresent(x -> IO.rewriteCppFile(filePath, x));
             }
+            addClassInfo(module);
         }
+    }
+
+    public HashSet<CppClass> getClassSet() {
+        return classSet;
     }
 
     public HashSet<String> getModuleSet() {

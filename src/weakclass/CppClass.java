@@ -4,24 +4,24 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class CppClass extends CppNamespace {
-    private LinkedHashSet<CppFunction> functionSet;
-    private LinkedHashSet<CppMember> memberSet;
-    private LinkedHashSet<CppClass> superSet;
+    private HashSet<CppFunction> functionSet;
+    private HashSet<CppMember> memberSet;
+    private HashSet<CppClass> superSet;
     private long numOfSuperVirtualFunction;
 
     public CppClass(String className) {
         super(className);
-        this.functionSet = new LinkedHashSet<>();
-        this.memberSet = new LinkedHashSet<>();
-        this.superSet = new LinkedHashSet<>();
+        this.functionSet = new HashSet<>();
+        this.memberSet = new HashSet<>();
+        this.superSet = new HashSet<>();
         this.numOfSuperVirtualFunction = 0;
     }
 
     public CppClass(String className, Stack<String> namespace) {
         super(className, namespace);
-        this.functionSet = new LinkedHashSet<>();
-        this.memberSet = new LinkedHashSet<>();
-        this.superSet = new LinkedHashSet<>();
+        this.functionSet = new HashSet<>();
+        this.memberSet = new HashSet<>();
+        this.superSet = new HashSet<>();
     }
 
     public void addSuperSet(CppClass superClass) {
@@ -46,6 +46,12 @@ public class CppClass extends CppNamespace {
                 .filter(CppFunction::isNoStatic)
                 .filter(this::isMyFunction)
                 .filter(x -> x.accessSpecifier.equals(accessSpecifier))
+                .collect(Collectors.toSet());
+    }
+
+    public Set<CppFunction> getAllVirtualFunctionSet() {
+        return functionSet.stream()
+                .filter(CppFunction::isNoStatic)
                 .collect(Collectors.toSet());
     }
 

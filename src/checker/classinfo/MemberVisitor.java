@@ -9,33 +9,33 @@ import weakclass.CppFunction;
 import weakclass.CppMember;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 
-public class MemberVisitor<T> extends CommonVisitor<LinkedHashSet<CppFunction>> {
+public class MemberVisitor<T> extends CommonVisitor<HashSet<CppFunction>> {
     private CppAccessSpecifier currentAccessSpecifier;
     private CppFunction currentFunction;
-    private LinkedHashSet<CppFunction> functionSet;
-    private LinkedHashSet<CppMember> memberSet;
+    private HashSet<CppFunction> functionSet;
+    private HashSet<CppMember> memberSet;
 
     private boolean isFunction;
 
     MemberVisitor() {
         this.currentAccessSpecifier = CppAccessSpecifier.DEFAULT;
-        this.functionSet = new LinkedHashSet<>();
-        this.memberSet = new LinkedHashSet<>();
+        this.functionSet = new HashSet<>();
+        this.memberSet = new HashSet<>();
     }
 
     /**
      * access specifier check
      */
     @Override
-    public LinkedHashSet<CppFunction> visitAccessspecifier(CPP14Parser.AccessspecifierContext ctx) {
+    public HashSet<CppFunction> visitAccessspecifier(CPP14Parser.AccessspecifierContext ctx) {
         currentAccessSpecifier = Info.getAccessSpecifier(ctx);
         return super.visitAccessspecifier(ctx);
     }
 
     @Override
-    public LinkedHashSet<CppFunction> visitFunctionspecifier(CPP14Parser.FunctionspecifierContext ctx) {
+    public HashSet<CppFunction> visitFunctionspecifier(CPP14Parser.FunctionspecifierContext ctx) {
         if (ctx.Virtual() != null)
             currentFunction.setVirtual();
         super.visitFunctionspecifier(ctx);
@@ -43,7 +43,7 @@ public class MemberVisitor<T> extends CommonVisitor<LinkedHashSet<CppFunction>> 
     }
 
     @Override
-    public LinkedHashSet<CppFunction> visitMemberdeclaration(CPP14Parser.MemberdeclarationContext ctx) {
+    public HashSet<CppFunction> visitMemberdeclaration(CPP14Parser.MemberdeclarationContext ctx) {
         currentFunction.setContent(ctx);
         super.visitMemberdeclaration(ctx);
 
@@ -57,14 +57,14 @@ public class MemberVisitor<T> extends CommonVisitor<LinkedHashSet<CppFunction>> 
     }
 
     @Override
-    public LinkedHashSet<CppFunction> visitMemberspecification(CPP14Parser.MemberspecificationContext ctx) {
+    public HashSet<CppFunction> visitMemberspecification(CPP14Parser.MemberspecificationContext ctx) {
         currentFunction = new CppFunction(currentAccessSpecifier);
         super.visitMemberspecification(ctx);
         return functionSet;
     }
 
     @Override
-    public LinkedHashSet<CppFunction> visitParametersandqualifiers(CPP14Parser.ParametersandqualifiersContext ctx) {
+    public HashSet<CppFunction> visitParametersandqualifiers(CPP14Parser.ParametersandqualifiersContext ctx) {
         ParamVisitor<ArrayList<String>> visitor = new ParamVisitor<>();
         currentFunction.setParameters(visitor.visitParametersandqualifiers(ctx));
         currentFunction.setName(Info.getFunctionName(ctx.getParent()));
@@ -74,11 +74,11 @@ public class MemberVisitor<T> extends CommonVisitor<LinkedHashSet<CppFunction>> 
     }
 
     @Override
-    public LinkedHashSet<CppFunction> visitFunctionbody(CPP14Parser.FunctionbodyContext ctx) {
+    public HashSet<CppFunction> visitFunctionbody(CPP14Parser.FunctionbodyContext ctx) {
         return null;
     }
 
-    public LinkedHashSet<CppMember> getMemberSet() {
+    public HashSet<CppMember> getMemberSet() {
         return memberSet;
     }
 }

@@ -1,11 +1,13 @@
 package processing.util;
 
+import classinfo.Serializer;
 import processing.ReadFile;
 import weakclass.CppClass;
 
 import java.io.*;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 
 public class IO {
@@ -60,7 +62,11 @@ public class IO {
      * @return Class information file's path
      */
     public static String getClassInfoFilePath(String filePath) {
-        return Paths.get(info, filePath).toString();
+        String base = IO.baseDir.replace("./", "");
+        return Paths.get(info, base, filePath).toString()
+                .replace(".cc", ".info")
+                .replace(".c++", ".info")
+                .replace(".cpp", ".info");
     }
 
     static String getFullPath(String filePath) {
@@ -110,21 +116,17 @@ public class IO {
     }
 
     /**
-     * Write class's information as JSON
+     * Write class's information
      * @param filePath FilePath for logging
-     * @param classInfo Class information stored in JSON
+     * @param classSet Class Set stored in JSON
      */
-    public static void writeClassInfo(String filePath, Set<CppClass> classInfo) {
+    public static void writeClassInfo(String filePath, HashSet<CppClass> classSet) {
         makeDictionaries(getClassInfoFilePath(filePath));
-//        try (BufferedWriter bw = new BufferedWriter(new FileWriter(getClassInfoFilePath(filePath)))) {
-//            bw.write(classInfo(classInfo));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-    }
-
-    public static String classInfo(Set<CppClass> classInfo) {
-        return "";
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(getClassInfoFilePath(filePath)))) {
+            bw.write(Serializer.serializeClassSet(classSet));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

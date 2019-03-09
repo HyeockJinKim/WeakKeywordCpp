@@ -35,6 +35,14 @@ public class CppFunction extends CppMember {
         this.name = name;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public ArrayList<String> getParameters() {
+        return parameters;
+    }
+
     boolean equals(String name, ArrayList<String> params) {
         return this.name.equals(name) && this.parameters.equals(params);
     }

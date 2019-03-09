@@ -10,7 +10,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import weakclass.CppClass;
 
 import java.io.IOException;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Optional;
 
 public class Parsing {
@@ -23,7 +23,7 @@ public class Parsing {
      * Parse file for saving class information
      * @param filePath File path for parsing
      */
-    public static Optional<String> parseClass(String filePath, LinkedHashSet<CppClass> classSet) {
+    public static Optional<String> parseClass(String filePath, HashSet<CppClass> classSet) {
         try {
             CPP14Lexer lexer = new CPP14Lexer(CharStreams.fromFileName(filePath));
             CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -49,7 +49,7 @@ public class Parsing {
      * @param filePath File path for parsing
      * @return Converted C++ code
      */
-    public static Optional<String> parseStaticCast(String filePath, LinkedHashSet<CppClass> classSet) {
+    public static Optional<String> parseStaticCast(String filePath, HashSet<CppClass> classSet) {
         try {
             CPP14Lexer lexer = new CPP14Lexer(CharStreams.fromFileName(IO.getOutPath(filePath)));
             CommonTokenStream tokens = new CommonTokenStream(lexer);

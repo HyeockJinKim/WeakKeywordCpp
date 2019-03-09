@@ -12,6 +12,10 @@ public class CppMember {
         this.content = null;
     }
 
+    public String getAccessSpecifier() {
+        return accessSpecifier.getName().replaceAll("\n", "");
+    }
+
     public String getContent() {
         return "    " + Info.getText(content) + "\n";
     }

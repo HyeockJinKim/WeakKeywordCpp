@@ -9,7 +9,7 @@ import weakclass.CppClass;
 import weakclass.CppFunction;
 import weakclass.CppMember;
 
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Stack;
 
 /**
@@ -17,10 +17,10 @@ import java.util.Stack;
  * @param <T>
  */
 public class ClassInfoVisitor<T> extends CommonVisitor<Void> {
-    private LinkedHashSet<CppClass> classSet;
+    private HashSet<CppClass> classSet;
     private CppClass currentClass;
 
-    public ClassInfoVisitor(TokenStreamRewriter reWriter, LinkedHashSet<CppClass> classSet) {
+    public ClassInfoVisitor(TokenStreamRewriter reWriter, HashSet<CppClass> classSet) {
         super();
         this.classSet = classSet;
         this.reWriter = reWriter;
@@ -57,11 +57,11 @@ public class ClassInfoVisitor<T> extends CommonVisitor<Void> {
     @Override
     public Void visitMemberspecification(CPP14Parser.MemberspecificationContext ctx) {
         MemberVisitor<CppFunction> visitor = new MemberVisitor<>();
-        LinkedHashSet<CppFunction> memberFunctionSet = visitor.visitMemberspecification(ctx);
+        HashSet<CppFunction> memberFunctionSet = visitor.visitMemberspecification(ctx);
         for (CppFunction cppFunction : memberFunctionSet) {
             currentClass.updateFunction(cppFunction);
         }
-        LinkedHashSet<CppMember> memberSet = visitor.getMemberSet();
+        HashSet<CppMember> memberSet = visitor.getMemberSet();
         for (CppMember cppMember : memberSet) {
             currentClass.updateMember(cppMember);
         }

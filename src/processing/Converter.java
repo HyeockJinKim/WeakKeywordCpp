@@ -5,9 +5,8 @@ import processing.util.IO;
 import processing.util.Parsing;
 import weakclass.CppClass;
 
-import java.io.*;
 import java.nio.file.Paths;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Optional;
 
 
@@ -28,12 +27,11 @@ public class Converter {
      * If module wasn't parsed, parse it
      */
     public boolean convert() {
-        LinkedHashSet<CppClass> classSet = new LinkedHashSet<>();
-
+        HashSet<CppClass> classSet = new HashSet<>();
         /* Check hasClass, hasStaticCast */
         Checker checker = new Checker(filePath);
         checker.checkFile();
-
+        classSet.addAll(checker.getClassSet());
         if (checker.isHasClass()) {
             Optional<String> result = Parsing.parseClass(filePath, classSet);
             result.ifPresent(x -> IO.rewriteCppFile(filePath, x));

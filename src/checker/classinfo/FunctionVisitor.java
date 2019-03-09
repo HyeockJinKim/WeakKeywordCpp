@@ -9,17 +9,17 @@ import org.antlr.v4.runtime.TokenStreamRewriter;
 import weakclass.CppClass;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 
 public class FunctionVisitor<T> extends CommonVisitor<Void> {
-    private LinkedHashSet<CppClass> classSet;
+    private HashSet<CppClass> classSet;
     private ParserRuleContext context;
     private CppClass currentClass;
     private String className;
     private String functionName;
     private ArrayList<String> params;
 
-    FunctionVisitor(TokenStreamRewriter reWriter, LinkedHashSet<CppClass> classSet) {
+    FunctionVisitor(TokenStreamRewriter reWriter, HashSet<CppClass> classSet) {
         super();
         this.reWriter = reWriter;
         this.classSet = classSet;

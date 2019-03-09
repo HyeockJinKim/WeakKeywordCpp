@@ -9,12 +9,13 @@ class _B : public A {
     int b;
 
 private:
-    int a;
     bool isA;
     void go() {}
 
 protected:
-    int num(int a, int b) {}
+    int num(int a, int b) {
+        return a+b;
+    }
 
 public:
     void hello() {}
@@ -22,7 +23,6 @@ public:
 
 class B : public _B {
 private:
-    int a;
     bool isA;
     void go() {}
 

@@ -18,4 +18,11 @@ public enum CppAccessSpecifier {
         return nonPrivates;
     }
 
+    public static CppAccessSpecifier getEnum(String name) {
+        for (CppAccessSpecifier value : CppAccessSpecifier.values()) {
+            if (value.getName().replace("\n", "").equals(name))
+                return value;
+        }
+        return DEFAULT;
+    }
 }

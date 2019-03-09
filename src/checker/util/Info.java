@@ -23,7 +23,7 @@ public class Info {
         return null;
     }
 
-    public static void checkClass(TokenStreamRewriter reWriter, LinkedHashSet<CppClass> classSet, CPP14Parser.ClassspecifierContext ctx) {
+    public static void checkClass(TokenStreamRewriter reWriter, HashSet<CppClass> classSet, CPP14Parser.ClassspecifierContext ctx) {
         ClassInfoVisitor visitor = new ClassInfoVisitor(reWriter, classSet);
         visitor.visitClassspecifier(ctx);
     }

@@ -7,16 +7,16 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStreamRewriter;
 import weakclass.CppClass;
 
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 
 public class ClassVisitor<T> extends CommonVisitor<Void> {
-    private LinkedHashSet<CppClass> classSet;
+    private HashSet<CppClass> classSet;
     /**
      * Constructor for ClassVisitor
      * @param tokens Token stream for parsing
      * @param classSet Class information
      */
-    public ClassVisitor(CommonTokenStream tokens, LinkedHashSet<CppClass> classSet) {
+    public ClassVisitor(CommonTokenStream tokens, HashSet<CppClass> classSet) {
         super();
         reWriter = new TokenStreamRewriter(tokens);
         this.classSet = classSet;
@@ -40,7 +40,7 @@ public class ClassVisitor<T> extends CommonVisitor<Void> {
         return null;
     }
 
-    public LinkedHashSet<CppClass> getClassSet() {
+    public HashSet<CppClass> getClassSet() {
         return this.classSet;
     }
 }
