@@ -2,6 +2,7 @@ class A {
 };
 
 class B : public A {
+public:
     virtual void f();
     void f(int a, int b);
 };
@@ -16,5 +17,5 @@ void B::f(int a, int b) {
 int main() {
     A* a = new A;
     B* b = static_cast<B*>(a);
-    b->f(1, 2);
+//    b->f(1, 2);
 }

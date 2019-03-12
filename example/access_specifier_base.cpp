@@ -22,5 +22,5 @@ public:
 int main() {
     A* a = new A;
     B* b = static_cast<B*>(a);
-    b->f();
+//    b->f();
 }

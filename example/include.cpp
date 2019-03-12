@@ -1,12 +1,13 @@
 #include <iostream>
 #include "base.cpp"
 
-class B : public A {
+class C : public A {
+public:
     virtual void f() {}
 };
 
 int main() {
     A* a = new A;
-    B* b = static_cast<B*>(a);
-    b->f();
+    C* b = static_cast<C*>(a);
+//    b->f();
 }

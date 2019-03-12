@@ -30,5 +30,5 @@ public:
 int main() {
     A* a = new A;
     C* c = static_cast<_C*>(a);
-    c->h();
+//    c->h();
 }
