@@ -34,7 +34,10 @@ public class Serializer {
      */
     private static void serializeClass(StringBuilder sb, CppClass cppClass) {
         sb.append("#\n")
-                .append(cppClass.getFullName())
+                .append(cppClass.getName())
+                .append("\n");
+        sb.append("*\n")
+                .append(cppClass.getNamespace())
                 .append("\n");
         Set<CppFunction> virtualFunctionSet = cppClass.getAllVirtualFunctionSet();
         for (CppFunction virtual : virtualFunctionSet) {

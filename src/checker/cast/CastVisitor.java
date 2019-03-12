@@ -27,7 +27,7 @@ public class CastVisitor<T> extends CommonVisitor<Void> {
                 .findAny()
                 .ifPresent(x -> {
                     if (x.isWeak()) {
-                        Rewrite.castTempClass(reWriter, ctx);
+                        Rewrite.castTempClass(reWriter, ctx, x);
                     }
                 });
         super.visitPostfixexpression(ctx);
@@ -43,7 +43,7 @@ public class CastVisitor<T> extends CommonVisitor<Void> {
                     .findAny()
                     .ifPresent(x -> {
                         if (x.isWeak()) {
-                            Rewrite.castLimited(reWriter, ctx);
+                            Rewrite.castLimited(reWriter, ctx, x);
                             reWriter.insertBefore(ctx.stop, "_");
                         }
                     });

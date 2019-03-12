@@ -29,7 +29,8 @@ public class ClassReader {
     }
 
     private CppClass readClass() {
-        CppClass cppClass = new CppClass(infoList.get(i));
+        CppClass cppClass = new CppClass(infoList.get(i), infoList.get(i+2));
+        i += 3;
         for (; i < infoList.size();) {
             switch (infoList.get(i)) {
                 case "-":

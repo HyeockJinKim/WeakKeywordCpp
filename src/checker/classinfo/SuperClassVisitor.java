@@ -1,6 +1,7 @@
 package checker.classinfo;
 
 import checker.CommonVisitor;
+import checker.util.Info;
 import grammar.antlr.CPP14Parser;
 import weakclass.CppClass;
 import java.util.Set;
@@ -24,7 +25,7 @@ public class SuperClassVisitor<T> extends CommonVisitor<Void> {
     @Override
     public Void visitBasetypespecifier(CPP14Parser.BasetypespecifierContext ctx) {
         classSet.stream()
-                .filter(x -> x.getFullName().equals(ctx.getText()))
+                .filter(x -> x.getFullName().equals(Info.getFullName(namespace, ctx.getText())))
                 .findAny()
                 .ifPresent(currentClass::addSuperSet);
 

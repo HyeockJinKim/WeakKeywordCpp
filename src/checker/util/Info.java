@@ -28,6 +28,15 @@ public class Info {
         visitor.visitClassspecifier(ctx);
     }
 
+    public static String getFullName(Stack<String> namespace, String name) {
+        StringBuilder sb = new StringBuilder();
+        for (String s : namespace) {
+            sb.append(s).append("::");
+        }
+        sb.append(name);
+        return sb.toString();
+    }
+
     /**
      * Converts input ctx to existing code.
      * @param ctx ParserRuleContext Value about c++ code

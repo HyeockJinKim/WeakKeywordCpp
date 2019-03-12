@@ -9,6 +9,7 @@ import weakclass.CppFunction;
 import weakclass.CppMember;
 
 import java.util.Set;
+import java.util.Stack;
 
 public class Rewrite {
     private static Rewrite ourInstance = new Rewrite();
@@ -23,12 +24,12 @@ public class Rewrite {
      * In order to rewrite static_cast, Use the following functions.
      */
 
-    public static void castTempClass(TokenStreamRewriter reWriter, CPP14Parser.PostfixexpressionContext ctx) {
-        reWriter.insertBefore(ctx.thetypeid().start, "_");
+    public static void castTempClass(TokenStreamRewriter reWriter, CPP14Parser.PostfixexpressionContext ctx, CppClass currentClass) {
+        reWriter.replace(ctx.thetypeid().start, ctx.thetypeid().stop, currentClass.getTempClassName()+(Info.getText(ctx.thetypeid()).contains("*")?"*":""));
     }
 
-    public static void castLimited(TokenStreamRewriter reWriter, CPP14Parser.IdexpressionContext ctx) {
-        reWriter.insertBefore(ctx.stop, "_");
+    public static void castLimited(TokenStreamRewriter reWriter, CPP14Parser.IdexpressionContext ctx, CppClass currentClass) {
+        reWriter.replace(ctx.start, ctx.stop, currentClass.getTempClassName()+(Info.getText(ctx).contains("*")?"*":""));
     }
 
     /**
@@ -48,9 +49,10 @@ public class Rewrite {
      * In order to rewrite class, Use the following functions.
      */
 
-    private static void reWriteTempClassHead(StringBuilder sb, CPP14Parser.ClassspecifierContext ctx) {
+    private static void reWriteTempClassHead(StringBuilder sb, CPP14Parser.ClassspecifierContext ctx, CppClass currentClass, String namespace) {
         sb.append(Info.getText(ctx.classhead().classkey()))
-                .append(" _")
+                .append(namespace)
+                .append("_")
                 .append(Info.getText(ctx.classhead().classheadname()))
                 .append(" ")
                 .append(Info.getText(ctx.classhead().baseclause()))
@@ -69,11 +71,13 @@ public class Rewrite {
         sb.append("};\n\n");
     }
 
-    private static void reWriteBaseClassHead(StringBuilder sb, CPP14Parser.ClassspecifierContext ctx) {
+    private static void reWriteBaseClassHead(StringBuilder sb, CPP14Parser.ClassspecifierContext ctx, String namepsace) {
         sb.append(Info.getText(ctx.classhead().classkey()))
                 .append(" ")
                 .append(Info.getText(ctx.classhead().classheadname()))
-                .append(" : public _")
+                .append(" : public")
+                .append(namepsace)
+                .append("_")
                 .append(Info.getText(ctx.classhead().classheadname()))
                 .append(" {");
     }
@@ -115,15 +119,22 @@ public class Rewrite {
                 .forEach(sb::append);
     }
 
-    public static void reWriteClass(TokenStreamRewriter reWriter, CPP14Parser.ClassspecifierContext ctx, CppClass currentClass) {
+    public static void reWriteClass(TokenStreamRewriter reWriter, CPP14Parser.ClassspecifierContext ctx, CppClass currentClass, Stack<String> namespaceStack) {
         if (ctx != null) {
             if (ctx.classhead() != null) {
                 if (currentClass.isWeak()) {
+                    StringBuilder nameString = new StringBuilder();
+                    for (String s : namespaceStack) {
+                        nameString.append(s).append("::");
+                    }
+                    System.out.println(currentClass.getNamespace());
+                    System.out.println(nameString.toString());
+                    String name = " "+currentClass.getNamespace().replace(nameString.toString(), "");
                     StringBuilder tempClass = new StringBuilder();
-                    reWriteTempClassHead(tempClass, ctx);
+                    reWriteTempClassHead(tempClass, ctx, currentClass, name);
                     reWriteTempClassMember(currentClass, tempClass);
 
-                    reWriteBaseClassHead(tempClass, ctx);
+                    reWriteBaseClassHead(tempClass, ctx, name);
                     reWriteBaseClassMember(currentClass, tempClass);
 
                     reWriter.replace(ctx.start, ctx.stop, tempClass.toString());

@@ -71,6 +71,10 @@ public class ExampleResultTest {
     void TestIncludeResult() {
         TestResult("include.cpp");
     }
+    @Test
+    void TestNamespaceResult() {
+        TestResult("namespace.cpp");
+    }
 
     @Test
     void TestNonWeakResult() {

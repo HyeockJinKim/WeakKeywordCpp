@@ -24,6 +24,16 @@ public class CppClass extends CppNamespace {
         this.superSet = new HashSet<>();
     }
 
+    public CppClass(String className, String namespace) {
+        super(className, namespace);
+        this.functionSet = new HashSet<>();
+        this.memberSet = new HashSet<>();
+        this.superSet = new HashSet<>();
+    }
+
+    public String getTempClassName() {
+        return namespace.toString()+"_"+this.name;
+    }
     public void addSuperSet(CppClass superClass) {
         superSet.add(superClass);
     }
@@ -111,7 +121,7 @@ public class CppClass extends CppNamespace {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(name).append("\nsuper:\n");
+        sb.append(getFullName()).append("\nsuper:\n");
         for (CppClass superClass : superSet) {
             sb.append(superClass.toString());
         }
