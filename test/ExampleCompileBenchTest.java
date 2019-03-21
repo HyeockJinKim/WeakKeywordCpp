@@ -1,41 +1,21 @@
 import org.junit.jupiter.api.Test;
 import processing.ReadFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.fail;
 
-public class ExampleResultTest {
+public class ExampleCompileBenchTest {
     private static final String rootPath = Paths.get(".").toString();
     private static final String examplePath = Paths.get(rootPath,"example").toString();
     private static final String outPath = Paths.get(rootPath, "test_out").toString();
-    private static final String infoPath = Paths.get(rootPath, "test_out", "info", "example").toString();
-
-    public static String getExpectedFilePath(String filePath) {
-        return filePath.replace("test_out/", "")
-                .replace(".cpp", "-expected.cpp")
-                .replace(".c++", "-expected.c++")
-                .replace(".cc", "-expected.cc");
-    }
+    private static final String infoPath = Paths.get(rootPath, "test_out", "info").toString();
 
     private void TestResult(String filename) {
         try {
             String filePath = Paths.get(examplePath, filename).toString();
-            ReadFile.read(new String[]{filePath, "--basedir", examplePath, "-o", outPath, "--info", infoPath, "--debug"});
-            try {
-                File file = new File(Paths.get(outPath, "example", filename).toString());
-                List<String> actual = Files.readAllLines(file.toPath());
-                List<String> expected = Files.readAllLines(Paths.get(getExpectedFilePath(file.toString())));
-
-                assertEquals(expected, actual);
-            } catch (Exception e) {
-                fail();
-            }
+            for (int i = 0; i < 1000; ++i)
+                ReadFile.read(new String[]{filePath, "--basedir", examplePath, "-o", outPath, "--info", infoPath, "--debug"});
         } catch (Exception e) {
             e.printStackTrace();
             fail();

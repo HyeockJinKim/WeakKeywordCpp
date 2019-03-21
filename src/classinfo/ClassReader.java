@@ -55,7 +55,6 @@ public class ClassReader {
 
     private CppFunction readFunction() {
         String name = infoList.get(i);
-        System.out.println(name);
         i += 2;
         String accessSpecifier = infoList.get(i++);
         CppFunction function = new CppFunction(CppAccessSpecifier.getEnum(accessSpecifier));

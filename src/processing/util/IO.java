@@ -63,7 +63,7 @@ public class IO {
      */
     public static String getClassInfoFilePath(String filePath) {
         String base = IO.baseDir.replace("./", "");
-        return Paths.get(info, base, filePath).toString()
+        return Paths.get(info, filePath).toString()
                 .replace(".cc", ".info")
                 .replace(".c++", ".info")
                 .replace(".cpp", ".info");

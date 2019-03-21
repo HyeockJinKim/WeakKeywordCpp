@@ -127,8 +127,6 @@ public class Rewrite {
                     for (String s : namespaceStack) {
                         nameString.append(s).append("::");
                     }
-                    System.out.println(currentClass.getNamespace());
-                    System.out.println(nameString.toString());
                     String name = " "+currentClass.getNamespace().replace(nameString.toString(), "");
                     StringBuilder tempClass = new StringBuilder();
                     reWriteTempClassHead(tempClass, ctx, currentClass, name);
