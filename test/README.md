@@ -1,7 +1,7 @@
 
 # Test Result
 
-How long it takes to pre-process C++ program ( x 1,000 )
+## How long it takes to pre-process C++ program ( x 1,000 )
 
 |        **구분**        |   Time   |
 | --------------------  | -------- |
@@ -19,7 +19,7 @@ How long it takes to pre-process C++ program ( x 1,000 )
 
 <img src="./test_preprocess.png" alt="preprocess_test" width="600"/>
 
-How long it takes to compile C++ program ( x 1,000 )
+## How long it takes to compile C++ program ( x 1,000 )
 
 |        **구분**        |    Time   |
 | --------------------  | --------- |
@@ -37,7 +37,7 @@ How long it takes to compile C++ program ( x 1,000 )
 
 <img src="./test_compile.png" alt="compile_test" width="600"/>
 
-How long it takes to run a executable after compiling all C++ programs ( x 10,000 )
+## How long it takes to run a executable after compiling all C++ programs ( x 10,000 )
 
 |        **구분**        |  Origin  | Converted | difference |
 | --------------------  | -------- | --------- | ---------  |
