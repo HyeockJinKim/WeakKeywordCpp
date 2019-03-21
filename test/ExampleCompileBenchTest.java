@@ -1,78 +1,95 @@
 import org.junit.jupiter.api.Test;
-import processing.ReadFile;
 
-import java.nio.file.Paths;
-
-import static org.junit.jupiter.api.Assertions.fail;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class ExampleCompileBenchTest {
-    private static final String rootPath = Paths.get(".").toString();
-    private static final String examplePath = Paths.get(rootPath,"example").toString();
-    private static final String outPath = Paths.get(rootPath, "test_out").toString();
-    private static final String infoPath = Paths.get(rootPath, "test_out", "info").toString();
-
-    private void TestResult(String filename) {
+    private static String execCommand(String cmd) {
         try {
-            String filePath = Paths.get(examplePath, filename).toString();
-            for (int i = 0; i < 1000; ++i)
-                ReadFile.read(new String[]{filePath, "--basedir", examplePath, "-o", outPath, "--info", infoPath, "--debug"});
-        } catch (Exception e) {
+            Process process = Runtime.getRuntime().exec(cmd);
+            BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            String line;
+
+            StringBuffer bf = new StringBuffer();
+            while ((line = br.readLine()) != null) {
+                bf.append(line);
+                bf.append("\n");
+            }
+            return bf.toString();
+        } catch (IOException e) {
             e.printStackTrace();
-            fail();
         }
+        return null;
+    }
+
+    private static void compileGpp(String cpp, String run) {
+        execCommand("g++ -o ./test_out/exec/" + run + " " + cpp);
+    }
+
+    private static void compileAll(String filename) {
+        compileGpp("./example/" + filename + ".cpp", filename + "_origin");
+    }
+
+    private static void TestOriginPerformance(String file) {
+        for (int i = 0; i < 1000; ++i)
+            compileAll(file);
     }
 
     @Test
-    void TestAccessSpecifierResult() {
-        TestResult("access_specifier_base.cpp");
+    void TestBaseOriginPerformance() {
+        TestOriginPerformance("base");
     }
 
     @Test
-    void TestBaseResult() {
-        TestResult("base.cpp");
+    void TestAccessSpecifierOriginPerformance() {
+        TestOriginPerformance("access_specifier_base");
     }
 
     @Test
-    void TestConstructorResult() {
-        TestResult("constructor.cpp");
+    void TestConstructorOriginPerformance() {
+        TestOriginPerformance("constructor");
     }
 
     @Test
-    void TestDiamonResult() {
-        TestResult("diamond.cpp");
+    void TestDiamondOriginPerformance() {
+        TestOriginPerformance("diamond");
     }
 
     @Test
-    void TestExternalDefinitionResult() {
-        TestResult("external_definition.cpp");
+    void TestExternalOriginPerformance() {
+        TestOriginPerformance("external_definition");
     }
 
     @Test
-    void TestIncludeResult() {
-        TestResult("include.cpp");
-    }
-    @Test
-    void TestNamespaceResult() {
-        TestResult("namespace.cpp");
+    void TestIncludeOriginPerformance() {
+        TestOriginPerformance("include");
     }
 
     @Test
-    void TestNonWeakResult() {
-        TestResult("nonweak.cpp");
+    void TestNamespaceOriginPerformance() {
+        TestOriginPerformance("namespace");
     }
 
     @Test
-    void TestParamResult() {
-        TestResult("params.cpp");
+    void TestNonWeakOriginPerformance() {
+        TestOriginPerformance("nonweak");
     }
 
     @Test
-    void TestStaticResult() {
-        TestResult("static_base.cpp");
+    void TestParamsOriginPerformance() {
+        TestOriginPerformance("params");
     }
 
     @Test
-    void TestVirtualNonWeakResult() {
-        TestResult("virtual_nonweak.cpp");
+    void TestStaticOriginPerformance() {
+        TestOriginPerformance("static_base");
     }
+
+    @Test
+    void TestVirtualOriginPerformance() {
+        TestOriginPerformance("virtual_nonweak");
+    }
+
 }

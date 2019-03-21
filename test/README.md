@@ -15,8 +15,27 @@ How long it takes to pre-process C++ program ( x 1,000 )
 |       **Params**      | 39.958 s |
 |       **Static**      | 10.966 s |
 |  **Virutal Nonweak**  | 10.761 s |
+|        **Base**       |  0.509 s |
 
-![result](./test_preprocess.png)
+<img src="./test_preprocess.png" alt="preprocess_test" width="600"/>
+
+How long it takes to compile C++ program ( x 1,000 )
+
+|        **구분**        |    Time   |
+| --------------------  | --------- |
+| **Access Specifier**  |  50.738 s |
+|    **Constructor**    |  48.936 s |
+|      **Diamond**      | 278.966 s |
+|**External Definition**| 279.799 s |
+|       **Include**     | 263.796 s |
+|      **Namespace**    |  48.966 s |
+|      **NonWeak**      |  49.104 s |
+|       **Params**      |  49.104 s |
+|       **Static**      |  48.927 s |
+|  **Virutal Nonweak**  | 272.359 s |
+|        **Base**       |  45.919 s |
+
+<img src="./test_compile.png" alt="compile_test" width="600"/>
 
 How long it takes to run a executable after compiling all C++ programs ( x 10,000 )
 
@@ -33,4 +52,4 @@ How long it takes to run a executable after compiling all C++ programs ( x 10,00
 |       **Static**      | 34.809 s | 34.506 s  |  -0.303 s  |
 |  **Virutal Nonweak**  | 34.659 s | 35.720 s  |  +0.061 s  |
 
-![result](./test_result.png)
+<img src="./test_result.png" alt="execute_test" width="600"/>
