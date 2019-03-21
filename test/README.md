@@ -14,12 +14,12 @@
 |      **NonWeak**      |  3.246 s |
 |       **Params**      | 39.958 s |
 |       **Static**      | 10.966 s |
-|  **Virutal Nonweak**  | 10.761 s |
+|  **Virtual Nonweak**  | 10.761 s |
 |        **Base**       |  0.509 s |
 
 <img src="./test_preprocess.png" alt="preprocess_test" width="600"/>
 
-## How long it takes to compile C++ program ( x 1,000 )
+## How long it takes to compile original C++ program ( x 1,000 )
 
 |        **구분**        |    Time   |
 | --------------------  | --------- |
@@ -32,10 +32,28 @@
 |      **NonWeak**      |  49.104 s |
 |       **Params**      |  49.104 s |
 |       **Static**      |  48.927 s |
-|  **Virutal Nonweak**  | 272.359 s |
+|  **Virtual Nonweak**  | 272.359 s |
 |        **Base**       |  45.919 s |
 
 <img src="./test_compile.png" alt="compile_test" width="600"/>
+
+## How long it takes to compile pre-processed C++ program ( x 1,000 )
+
+|        **구분**        |    Time   |
+| --------------------  | --------- |
+| **Access Specifier**  |  50.447 s |
+|    **Constructor**    |  49.422 s |
+|      **Diamond**      | 280.446 s |
+|**External Definition**| 279.550 s |
+|       **Include**     | 268.208 s |
+|      **Namespace**    |  49.993 s |
+|      **NonWeak**      |  50.729 s |
+|       **Params**      |  51.216 s |
+|       **Static**      |  50.109 s |
+|  **Virtual Nonweak**  | 271.456 s |
+|        **Base**       |  45.607 s |
+
+<img src="./test_changed_compile.png" alt="compile_preprocessed_test" width="600"/>
 
 ## How long it takes to run a executable after compiling all C++ programs ( x 10,000 )
 
@@ -50,6 +68,6 @@
 |      **NonWeak**      | 34.567 s | 34.842 s  |  +0.275 s  |
 |       **Params**      | 34.815 s | 34.605 s  |  -0.210 s  |
 |       **Static**      | 34.809 s | 34.506 s  |  -0.303 s  |
-|  **Virutal Nonweak**  | 34.659 s | 35.720 s  |  +0.061 s  |
+|  **Virtual Nonweak**  | 34.659 s | 35.720 s  |  +0.061 s  |
 
 <img src="./test_result.png" alt="execute_test" width="600"/>

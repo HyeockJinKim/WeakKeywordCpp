@@ -1,38 +1,14 @@
 import org.junit.jupiter.api.Test;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
 public class ExampleBenchMarkTest {
 
-    private static String execCommand(String cmd) {
-        try {
-            Process process = Runtime.getRuntime().exec(cmd);
-            BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
-
-            String line;
-
-            StringBuffer bf = new StringBuffer();
-            while ((line = br.readLine()) != null) {
-                bf.append(line);
-                bf.append("\n");
-            }
-            return bf.toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     private static void compileGpp(String cpp, String run) {
-        execCommand("g++ -o ./test_out/exec/"+run+" "+cpp);
+        Utils.execCommand("g++ -o ./test_out/exec/"+run+" "+cpp);
     }
 
     private static void runCpp(String run) {
         for (int i = 0; i < 10000; ++i)
-            execCommand("./test_out/exec/"+run);
+            Utils.execCommand("./test_out/exec/"+run);
     }
 
     private static void compileAll(String filename) {

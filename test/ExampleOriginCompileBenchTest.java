@@ -4,34 +4,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class ExampleCompileBenchTest {
-    private static String execCommand(String cmd) {
-        try {
-            Process process = Runtime.getRuntime().exec(cmd);
-            BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
-
-            String line;
-
-            StringBuffer bf = new StringBuffer();
-            while ((line = br.readLine()) != null) {
-                bf.append(line);
-                bf.append("\n");
-            }
-            return bf.toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+public class ExampleOriginCompileBenchTest {
 
     private static void compileGpp(String cpp, String run) {
-        execCommand("g++ -o ./test_out/exec/" + run + " " + cpp);
+        Utils.execCommand("g++ -o ./test_out/exec/"+run+" "+cpp);
     }
 
     private static void compileAll(String filename) {
-        compileGpp("./example/" + filename + ".cpp", filename + "_origin");
+        compileGpp("./example/"+filename+".cpp", filename+"_origin");
     }
-
     private static void TestOriginPerformance(String file) {
         for (int i = 0; i < 1000; ++i)
             compileAll(file);
@@ -67,6 +48,7 @@ public class ExampleCompileBenchTest {
         TestOriginPerformance("include");
     }
 
+
     @Test
     void TestNamespaceOriginPerformance() {
         TestOriginPerformance("namespace");
@@ -91,5 +73,4 @@ public class ExampleCompileBenchTest {
     void TestVirtualOriginPerformance() {
         TestOriginPerformance("virtual_nonweak");
     }
-
 }
