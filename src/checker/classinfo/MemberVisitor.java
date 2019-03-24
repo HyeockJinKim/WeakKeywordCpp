@@ -7,6 +7,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import weakclass.CppAccessSpecifier;
 import weakclass.CppFunction;
 import weakclass.CppMember;
+import weakclass.CppNonVirtual;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -48,7 +49,7 @@ public class MemberVisitor<T> extends CommonVisitor<HashSet<CppFunction>> {
         super.visitMemberdeclaration(ctx);
 
         if (!isFunction) {
-            CppMember currentMember = new CppMember(currentAccessSpecifier);
+            CppNonVirtual currentMember = new CppNonVirtual(currentAccessSpecifier);
             currentMember.setContent(ctx);
             memberSet.add(currentMember);
         }

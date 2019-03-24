@@ -63,7 +63,7 @@ public class IO {
      */
     public static String getClassInfoFilePath(String filePath) {
         String base = IO.baseDir.replace("./", "");
-        return Paths.get(info, filePath).toString()
+        return Paths.get(info, base, filePath).toString()
                 .replace(".cc", ".info")
                 .replace(".c++", ".info")
                 .replace(".cpp", ".info");
@@ -98,6 +98,16 @@ public class IO {
         return passList;
     }
 
+    public static HashSet<CppClass> readClassInfo(String filePath) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(filePath))) {
+            return (HashSet<CppClass>) in.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     /**
      * Rewrite Cpp file to make safe in v-table
      * @param file .cc file
@@ -118,12 +128,12 @@ public class IO {
     /**
      * Write class's information
      * @param filePath FilePath for logging
-     * @param classSet Class Set stored in JSON
+     * @param classSet Class Set used in cpp file
      */
     public static void writeClassInfo(String filePath, HashSet<CppClass> classSet) {
         makeDictionaries(getClassInfoFilePath(filePath));
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(getClassInfoFilePath(filePath)))) {
-            bw.write(Serializer.serializeClassSet(classSet));
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(getClassInfoFilePath(filePath)))) {
+            out.writeObject(classSet);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -32,12 +32,9 @@ public class Checker {
      */
     private void addClassInfo(String module) {
         String classInfoFile = IO.getClassInfoFilePath(module);
-        try {
-            ClassReader reader = new ClassReader(Files.readAllLines(Paths.get(classInfoFile)));
-            classSet.addAll(reader.readClassSet());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        HashSet<CppClass> info = IO.readClassInfo(Paths.get(classInfoFile).toString());
+        if (info != null)
+            classSet.addAll(info);
     }
 
     /**

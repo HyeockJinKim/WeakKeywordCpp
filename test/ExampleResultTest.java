@@ -14,7 +14,7 @@ public class ExampleResultTest {
     private static final String rootPath = Paths.get(".").toString();
     private static final String examplePath = Paths.get(rootPath,"example").toString();
     private static final String outPath = Paths.get(rootPath, "test_out").toString();
-    private static final String infoPath = Paths.get(rootPath, "test_out", "info", "example").toString();
+    private static final String infoPath = Paths.get(rootPath, "test_out", "info").toString();
 
     public static String getExpectedFilePath(String filePath) {
         return filePath.replace("test_out/", "")

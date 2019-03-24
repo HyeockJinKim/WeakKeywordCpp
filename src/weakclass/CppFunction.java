@@ -3,6 +3,7 @@ package weakclass;
 import checker.util.Info;
 import org.antlr.v4.runtime.ParserRuleContext;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class CppFunction extends CppMember {

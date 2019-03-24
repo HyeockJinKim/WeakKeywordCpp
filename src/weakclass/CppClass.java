@@ -1,5 +1,6 @@
 package weakclass;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,6 +39,9 @@ public class CppClass extends CppNamespace {
         superSet.add(superClass);
     }
 
+    public void clearMemberSet() {
+        memberSet = null;
+    }
     public Set<CppFunction> getFunctionSet(CppAccessSpecifier accessSpecifier) {
         return functionSet.stream()
                 .filter(x -> x.accessSpecifier.equals(accessSpecifier))

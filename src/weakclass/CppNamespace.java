@@ -1,8 +1,9 @@
 package weakclass;
 
+import java.io.Serializable;
 import java.util.Stack;
 
-public class CppNamespace {
+public class CppNamespace implements Serializable {
     protected StringBuilder namespace;
     protected String name;
 

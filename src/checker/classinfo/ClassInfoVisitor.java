@@ -39,6 +39,7 @@ public class ClassInfoVisitor<T> extends CommonVisitor<Void> {
         currentClass = new CppClass(Info.getText(ctx.classhead().classheadname()), namespace);
         super.visitClassspecifier(ctx);
         Rewrite.reWriteClass(reWriter, ctx, currentClass, namespace);
+        currentClass.clearMemberSet();
         classSet.add(currentClass);
     }
 

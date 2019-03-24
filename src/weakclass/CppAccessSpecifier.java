@@ -1,6 +1,8 @@
 package weakclass;
 
-public enum CppAccessSpecifier {
+import java.io.Serializable;
+
+public enum CppAccessSpecifier implements Serializable {
     DEFAULT("\n"), PRIVATE("\nprivate:\n"), PROTECTED("\nprotected:\n"), PUBLIC("\npublic:\n");
 
     private final String name;

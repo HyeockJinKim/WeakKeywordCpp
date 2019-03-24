@@ -3,9 +3,11 @@ package weakclass;
 import checker.util.Info;
 import org.antlr.v4.runtime.ParserRuleContext;
 
-public class CppMember {
+import java.io.Serializable;
+
+public class CppMember implements Serializable {
     CppAccessSpecifier accessSpecifier;
-    ParserRuleContext content;
+    String content;
 
     public CppMember(CppAccessSpecifier accessSpecifier) {
         this.accessSpecifier = accessSpecifier;
@@ -17,15 +19,11 @@ public class CppMember {
     }
 
     public String getContent() {
-        return "    " + Info.getText(content) + "\n";
-    }
-
-    public ParserRuleContext getContext() {
         return content;
     }
 
     public void setContent(ParserRuleContext content) {
-        this.content = content;
+        this.content = "    " + Info.getText(content) + "\n";
     }
 
 }
