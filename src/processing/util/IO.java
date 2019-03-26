@@ -30,23 +30,22 @@ public class IO {
 
     public static void setLogDir(String log) {
         if (IO.log == null)
-            IO.log = log;
+            IO.log = Paths.get(log).toAbsolutePath().toString().replace("/./", "/");
     }
 
     public static void setInfoDir(String info) {
         if (IO.info == null)
-            IO.info = info;
+            IO.info = Paths.get(info).toAbsolutePath().toString().replace("/./", "/");
     }
 
     public static void setOutDir(String out) {
         if (IO.out == null)
-            IO.out = out;
+            IO.out = Paths.get(out).toAbsolutePath().toString().replace("/./", "/");
     }
 
     public static void setBaseDir(String baseDir) {
-        if (IO.baseDir == null) {
-            IO.baseDir = baseDir;
-        }
+        if (IO.baseDir == null)
+            IO.baseDir = Paths.get(baseDir).toAbsolutePath().toString().replace("/./", "/");
     }
 
     public static void setDefaultDir(String baseDir) {
@@ -55,25 +54,30 @@ public class IO {
         setInfoDir(Paths.get(baseDir,"info").toString());
         setOutDir(Paths.get(baseDir, "out_folder").toString());
     }
-
     /**
      * Get class's information file's path
      * @param filePath File path to get class information
      * @return Class information file's path
      */
     public static String getClassInfoFilePath(String filePath) {
-        String base = IO.baseDir.replace("./", "");
-        return Paths.get(info, base, filePath).toString()
+        filePath = filePath.replace(IO.baseDir, "");
+        return Paths.get(info, filePath).toString()
                 .replace(".cc", ".info")
                 .replace(".c++", ".info")
-                .replace(".cpp", ".info");
+                .replace(".cpp", ".info")
+                .replace(".h", ".hinfo")
+                .replace(".h++", ".hinfo")
+                .replace(".hh", ".hinfo")
+                .replace(".hpp", ".hinfo");
     }
 
     static String getFullPath(String filePath) {
+        filePath = filePath.replace(IO.baseDir, "");
         return Paths.get(baseDir, filePath).toString();
     }
 
     public static String getOutPath(String filePath) {
+        filePath = filePath.replace(IO.baseDir, "");
         return Paths.get(out, filePath).toString();
     }
 
@@ -131,8 +135,9 @@ public class IO {
      * @param classSet Class Set used in cpp file
      */
     public static void writeClassInfo(String filePath, HashSet<CppClass> classSet) {
-        makeDictionaries(getClassInfoFilePath(filePath));
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(getClassInfoFilePath(filePath)))) {
+        filePath = getClassInfoFilePath(filePath);
+        makeDictionaries(filePath);
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filePath))) {
             out.writeObject(classSet);
         } catch (IOException e) {
             e.printStackTrace();

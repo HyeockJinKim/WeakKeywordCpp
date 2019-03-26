@@ -18,7 +18,7 @@ public class Converter {
      * @param filePath File path for set path
      */
     public Converter(String filePath) {
-        this.filePath = filePath;
+        this.filePath = Paths.get(filePath).toAbsolutePath().toString().replace("/./", "/");
     }
 
 
@@ -27,11 +27,10 @@ public class Converter {
      * If module wasn't parsed, parse it
      */
     public boolean convert() {
-        HashSet<CppClass> classSet = new HashSet<>();
         /* Check hasClass, hasStaticCast */
         Checker checker = new Checker(filePath);
         checker.checkFile();
-        classSet.addAll(checker.getClassSet());
+        HashSet<CppClass> classSet = new HashSet<>(checker.getClassSet());
         if (checker.isHasClass()) {
             Optional<String> result = Parsing.parseClass(filePath, classSet);
             result.ifPresent(x -> IO.rewriteCppFile(filePath, x));

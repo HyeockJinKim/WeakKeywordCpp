@@ -99,8 +99,10 @@ public class Checker {
     private void checkModule() {
         for (String module : moduleSet) {
             if (!new File(IO.getClassInfoFilePath(module)).exists()) {
-                Optional<String> result = Parsing.parseClass(IO.getFullPath(module), classSet);
-                result.ifPresent(x -> IO.rewriteCppFile(filePath, x));
+                HashSet<CppClass> tempSet = new HashSet<>();
+                Optional<String> result = Parsing.parseClass(IO.getFullPath(module), tempSet);
+                result.ifPresent(x -> IO.rewriteCppFile(module, x));
+                IO.writeClassInfo(module, tempSet);
             }
             addClassInfo(module);
         }
@@ -108,10 +110,6 @@ public class Checker {
 
     public HashSet<CppClass> getClassSet() {
         return classSet;
-    }
-
-    public HashSet<String> getModuleSet() {
-        return moduleSet;
     }
 
     public boolean isHasClass() {
