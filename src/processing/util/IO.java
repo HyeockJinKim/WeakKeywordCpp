@@ -1,27 +1,35 @@
 package processing.util;
 
-import classinfo.Serializer;
-import processing.ReadFile;
 import weakclass.CppClass;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Set;
 
 public class IO {
-    private static IO ourInstance = new IO();
     public static boolean isDebug = false;
     private static String baseDir = null;
     private static String log = null;
     private static String out = null;
     private static String info = null;
-    public static IO getInstance() {
-        return ourInstance;
-    }
 
     private IO() {
+    }
+
+
+    static String addBasePath(String filePath) {
+        return Paths.get(baseDir, filePath).toString();
+    }
+
+    public static void copyFile(String filePath) throws IOException {
+        String outPath = getOutPath(filePath);
+        if (new File(outPath).exists())
+            return ;
+
+        makeDictionaries(outPath);
+        Files.copy(new File(addBasePath(filePath)).toPath(), new File(outPath).toPath());
     }
 
     public static void setDebug() {
@@ -71,12 +79,13 @@ public class IO {
                 .replace(".hpp", ".hinfo");
     }
 
-    static String getFullPath(String filePath) {
-        filePath = filePath.replace(IO.baseDir, "");
-        return Paths.get(baseDir, filePath).toString();
+    public static String getRelativePath(String filePath) {
+        return new File(filePath).getAbsolutePath()
+                .replace(IO.baseDir, "")
+                .replace("/./", "/");
     }
 
-    public static String getOutPath(String filePath) {
+    static String getOutPath(String filePath) {
         filePath = filePath.replace(IO.baseDir, "");
         return Paths.get(out, filePath).toString();
     }
@@ -117,8 +126,9 @@ public class IO {
      * @param file .cc file
      */
     public static void rewriteCppFile(String filePath, String file) {
-        makeDictionaries(getOutPath(filePath));
-        try(BufferedWriter bw = new BufferedWriter(new FileWriter(getOutPath(filePath)))) {
+        String out = getOutPath(filePath);
+        makeDictionaries(out);
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter(out))) {
             bw.write(file);
         } catch (IOException e) {
             e.printStackTrace();

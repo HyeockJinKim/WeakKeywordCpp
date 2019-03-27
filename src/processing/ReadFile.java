@@ -162,6 +162,8 @@ public class ReadFile {
             if (isDebugCheck(file.getName()))
                 return ;
             convertCcFile(file.getPath());
+        } else {
+            IO.copyFile(IO.getRelativePath(file.getPath()));
         }
     }
 }

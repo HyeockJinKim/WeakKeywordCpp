@@ -1,18 +1,14 @@
 package processing.util;
 
-import classinfo.ClassReader;
-import processing.ReadFile;
 import weakclass.CppClass;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 public class Checker {
     private HashSet<CppClass> classSet;
@@ -64,7 +60,7 @@ public class Checker {
         if (line.contains("#include")) {
             if (line.contains("\"")) {
                 String temp = line.split("\"")[1];
-                String path = IO.getFullPath(temp);
+                String path = IO.addBasePath(temp);
                 File file = new File(path);
                 if (file.isFile()) {
                     moduleSet.add(line.split("\"")[1]);
@@ -100,7 +96,7 @@ public class Checker {
         for (String module : moduleSet) {
             if (!new File(IO.getClassInfoFilePath(module)).exists()) {
                 HashSet<CppClass> tempSet = new HashSet<>();
-                Optional<String> result = Parsing.parseClass(IO.getFullPath(module), tempSet);
+                Optional<String> result = Parsing.parseClass(IO.addBasePath(module), tempSet);
                 result.ifPresent(x -> IO.rewriteCppFile(module, x));
                 IO.writeClassInfo(module, tempSet);
             }

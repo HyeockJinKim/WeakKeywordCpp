@@ -2,11 +2,9 @@ import org.junit.jupiter.api.Test;
 import processing.ReadFile;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -82,8 +80,18 @@ public class ExampleResultTest {
     }
 
     @Test
+    void TestNoTargetResult() {
+        TestResult("no-target.c");
+    }
+
+    @Test
     void TestParamResult() {
         TestResult("params.cpp");
+    }
+
+    @Test
+    void TestREADMEResult() {
+        TestResult("README.md");
     }
 
     @Test
