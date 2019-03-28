@@ -161,9 +161,10 @@ public class ReadFile {
                 || file.getPath().endsWith(".h")) {
             if (isDebugCheck(file.getName()))
                 return ;
+            System.out.println(file.getPath());
             convertCcFile(file.getPath());
         } else {
-            IO.copyFile(IO.getRelativePath(file.getPath()));
+            IO.copyFile(file.getPath());
         }
     }
 }

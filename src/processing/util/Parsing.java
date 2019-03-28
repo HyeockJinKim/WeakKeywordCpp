@@ -38,6 +38,7 @@ public class Parsing {
 
             return Optional.ofNullable(visitor.getFullText());
         } catch (IOException e) {
+            System.out.println("class error : " +filePath);
             System.out.println("File Input is not correct");
         }
 
@@ -61,6 +62,7 @@ public class Parsing {
 
             return Optional.ofNullable(visitor.getFullText());
         } catch (IOException e) {
+            System.out.println("static_cast error : " +IO.getOutPath(filePath));
             System.out.println("File Input is not correct");
         }
 

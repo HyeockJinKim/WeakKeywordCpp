@@ -5,6 +5,7 @@ import processing.util.IO;
 import processing.util.Parsing;
 import weakclass.CppClass;
 
+import java.io.File;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Optional;
@@ -33,7 +34,10 @@ public class Converter {
         HashSet<CppClass> classSet = new HashSet<>(checker.getClassSet());
         if (checker.isHasClass()) {
             Optional<String> result = Parsing.parseClass(filePath, classSet);
-            result.ifPresent(x -> IO.rewriteCppFile(filePath, x));
+            result.ifPresentOrElse(x -> IO.rewriteCppFile(filePath, x),
+                    () -> IO.copyFile(filePath));
+        } else {
+            IO.copyFile(filePath);
         }
         IO.writeClassInfo(filePath, classSet);
         if (checker.isHasStaticCast()) {

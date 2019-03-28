@@ -23,13 +23,18 @@ public class IO {
         return Paths.get(baseDir, filePath).toString();
     }
 
-    public static void copyFile(String filePath) throws IOException {
+    public static void copyFile(String filePath) {
+        filePath = addBasePath(getRelativePath(filePath));
         String outPath = getOutPath(filePath);
-        if (new File(outPath).exists())
+        if (!new File(filePath).exists() || new File(outPath).exists())
             return ;
 
         makeDictionaries(outPath);
-        Files.copy(new File(addBasePath(filePath)).toPath(), new File(outPath).toPath());
+        try {
+            Files.copy(new File(filePath).toPath(), new File(outPath).toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void setDebug() {

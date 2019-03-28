@@ -36,11 +36,14 @@ public class ClassInfoVisitor<T> extends CommonVisitor<Void> {
     }
 
     private void visitClass(CPP14Parser.ClassspecifierContext ctx) {
-        currentClass = new CppClass(Info.getText(ctx.classhead().classheadname()), namespace);
-        super.visitClassspecifier(ctx);
-        Rewrite.reWriteClass(reWriter, ctx, currentClass, namespace);
-        currentClass.clearMemberSet();
-        classSet.add(currentClass);
+        try {
+            currentClass = new CppClass(Info.getText(ctx.classhead().classheadname()), namespace);
+            super.visitClassspecifier(ctx);
+            Rewrite.reWriteClass(reWriter, ctx, currentClass, namespace);
+            currentClass.clearMemberSet();
+            classSet.add(currentClass);
+        } catch (NullPointerException ignored) {
+        }
     }
 
     @Override
