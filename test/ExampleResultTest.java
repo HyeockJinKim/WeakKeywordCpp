@@ -56,6 +56,16 @@ public class ExampleResultTest {
     }
 
     @Test
+    void TestDestructorResult() {
+        TestResult("destructor.cpp");
+    }
+
+    @Test
+    void TestDestructorBaseResult() {
+        TestResult("destructor_base.cpp");
+    }
+
+    @Test
     void TestDiamonResult() {
         TestResult("diamond.cpp");
     }

@@ -12,6 +12,7 @@ public class CppFunction extends CppMember {
     private String name;
 
     private boolean isConstructor;
+    private boolean isDestructor;
     private boolean isVirtual;
 
     public CppFunction(CppAccessSpecifier accessSpecifier) {
@@ -25,6 +26,7 @@ public class CppFunction extends CppMember {
     void setClassName(String className) {
         if (className.equals(name))
             this.isConstructor = true;
+
         this.className = className;
     }
 
@@ -33,6 +35,8 @@ public class CppFunction extends CppMember {
     }
 
     public void setName(String name) {
+        if (name.contains("~"))
+            this.isDestructor = true;
         this.name = name;
     }
 
@@ -73,8 +77,8 @@ public class CppFunction extends CppMember {
         return accessSpecifier == CppAccessSpecifier.PRIVATE;
     }
 
-    public boolean isNoStatic() {
-        return isVirtual || isConstructor;
+    boolean isNoStatic() {
+        return isVirtual || isConstructor || isDestructor;
     }
 
     @Override
