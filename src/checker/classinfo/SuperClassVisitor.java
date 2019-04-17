@@ -18,7 +18,6 @@ public class SuperClassVisitor<T> extends CommonVisitor<Void> {
     @Override
     public Void visitBaseclause(CPP14Parser.BaseclauseContext ctx) {
         super.visitBaseclause(ctx);
-        currentClass.inheritSuperVirtualFunction();
         return null;
     }
 

@@ -73,7 +73,7 @@ public class CppClass extends CppNamespace {
         for (CppClass cppClass : superSet) {
             cppClass.functionSet.stream()
                     .filter(CppFunction::isVirtual)
-                    .forEach(functionSet::add);
+                    .forEach(this.functionSet::add);
         }
         numOfSuperVirtualFunction = numOfVirtualFunction();
     }
@@ -101,7 +101,13 @@ public class CppClass extends CppNamespace {
 
     public void updateFunction(CppFunction function) {
         function.setClassName(getFullName());
-        functionSet.remove(function);
+        functionSet.stream()
+                .filter(x -> x.equals(function))
+                .findAny()
+                .ifPresent(x -> {
+                    function.setVirtual();
+                    functionSet.remove(function);
+                });
         functionSet.add(function);
     }
 

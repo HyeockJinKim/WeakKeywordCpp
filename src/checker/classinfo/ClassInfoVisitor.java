@@ -31,7 +31,7 @@ public class ClassInfoVisitor<T> extends CommonVisitor<Void> {
     public Void visitBaseclause(CPP14Parser.BaseclauseContext ctx) {
         SuperClassVisitor visitor = new SuperClassVisitor(classSet, currentClass);
         visitor.visitBaseclause(ctx);
-
+        currentClass.inheritSuperVirtualFunction();
         return null;
     }
 

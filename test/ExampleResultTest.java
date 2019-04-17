@@ -71,6 +71,11 @@ public class ExampleResultTest {
     }
 
     @Test
+    void TestExplicitResult() {
+        TestResult("explicit.cpp");
+    }
+
+    @Test
     void TestExternalDefinitionResult() {
         TestResult("external_definition.cpp");
     }
