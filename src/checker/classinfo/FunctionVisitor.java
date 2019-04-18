@@ -52,7 +52,7 @@ public class FunctionVisitor<T> extends CommonVisitor<Void> {
     @Override
     public Void visitFunctiondefinition(CPP14Parser.FunctiondefinitionContext ctx) {
         super.visitFunctiondefinition(ctx);
-        if (currentClass != null) {
+        if (currentClass != null && currentClass.isWeak()) {
             currentClass.findFunction(functionName, params)
                     .ifPresent(x -> Rewrite.reWriteFunctionName(reWriter, context, ctx, x));
         }

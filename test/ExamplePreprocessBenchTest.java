@@ -29,7 +29,7 @@ public class ExamplePreprocessBenchTest {
 
     @Test
     void TestBaseResult() {
-        TestResult("base.cpp");
+        TestResult("base.h");
     }
 
     @Test

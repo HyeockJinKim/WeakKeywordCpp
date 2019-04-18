@@ -1,5 +1,5 @@
 #include <iostream>
-#include "base.cpp"
+#include "base.h"
 
 class _C : public A {};
 

@@ -14,11 +14,10 @@ public class ExampleResultTest {
     private static final String outPath = Paths.get(rootPath, "test_out", "example").toString();
     private static final String infoPath = Paths.get(rootPath, "test_out", "info").toString();
 
-    public static String getExpectedFilePath(String filePath) {
+    private static String getExpectedFilePath(String filePath) {
         return filePath.replace("test_out/", "")
-                .replace(".cpp", "-expected.cpp")
-                .replace(".c++", "-expected.c++")
-                .replace(".cc", "-expected.cc");
+                .replace(".h", "-expected.h")
+                .replace(".cpp", "-expected.cpp");
     }
 
     private void TestResult(String filename) {
@@ -47,7 +46,7 @@ public class ExampleResultTest {
 
     @Test
     void TestBaseResult() {
-        TestResult("base.cpp");
+        TestResult("base.h");
     }
 
     @Test
@@ -80,10 +79,17 @@ public class ExampleResultTest {
         TestResult("external_definition.cpp");
     }
 
+
+    @Test
+    void TestExternalDefinitionBaseResult() {
+        TestResult("external_definition_base.cpp");
+    }
+
     @Test
     void TestIncludeResult() {
         TestResult("include.cpp");
     }
+
     @Test
     void TestNamespaceResult() {
         TestResult("namespace.cpp");
@@ -112,6 +118,11 @@ public class ExampleResultTest {
     @Test
     void TestStaticResult() {
         TestResult("static_base.cpp");
+    }
+
+    @Test
+    void TestStaticProtectedResult() {
+        TestResult("static_protected.h");
     }
 
     @Test
