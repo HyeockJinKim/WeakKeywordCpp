@@ -23,8 +23,8 @@ public class CppFunction extends CppMember {
     }
 
 
-    void setClassName(String className) {
-        if (className.equals(name))
+    void setClassName(String className, String name) {
+        if (this.name.equals(name))
             this.isConstructor = true;
 
         this.className = className;

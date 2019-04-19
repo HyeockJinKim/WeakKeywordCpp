@@ -100,7 +100,7 @@ public class CppClass extends CppNamespace {
     }
 
     public void updateFunction(CppFunction function) {
-        function.setClassName(getFullName());
+        function.setClassName(getFullName(), name);
         functionSet.stream()
                 .filter(x -> x.equals(function))
                 .findAny()

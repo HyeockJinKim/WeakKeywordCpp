@@ -55,6 +55,11 @@ public class ExampleResultTest {
     }
 
     @Test
+    void TestConstructorParameterResult() {
+        TestResult("constructor_parameter.cpp");
+    }
+
+    @Test
     void TestDestructorResult() {
         TestResult("destructor.cpp");
     }
