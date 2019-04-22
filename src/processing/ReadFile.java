@@ -142,26 +142,17 @@ public class ReadFile {
         }
     }
 
-    private static boolean isDebugCheck(String fileName) {
-        return IO.isDebug &&
-                (fileName.endsWith("-expected.cpp")
-                        || fileName.endsWith("-expected.c++")
-                        || fileName.endsWith("-expected.cc"));
-    }
-
     /**
      * Check this file is .cc file and convert it
      * @param file File for checking
      * @throws IOException No file input
      */
-    private static void checkCCFile(File file) throws IOException {
+    private static void checkCCFile(File file) {
+        System.out.println(file);
         if (file.getPath().endsWith(".cc")
                 || file.getPath().endsWith(".cpp")
                 || file.getPath().endsWith(".c++")
                 || file.getPath().endsWith(".h")) {
-            if (isDebugCheck(file.getName()))
-                return ;
-            System.out.println(file.getPath());
             convertCcFile(file.getPath());
         } else {
             IO.copyFile(file.getPath());

@@ -1,6 +1,5 @@
 package weakclass;
 
-import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -74,6 +73,14 @@ public class CppClass extends CppNamespace {
             cppClass.functionSet.stream()
                     .filter(CppFunction::isVirtual)
                     .forEach(this.functionSet::add);
+
+//            cppClass.functionSet.stream()
+//                    .filter(x -> !x.isVirtual())
+//                    .filter(CppFunction::isNoPrivate)
+//                    .filter(CppFunction::isConstructor)
+//                    .map(x -> CppFunction.makeConstructor(name, x))
+//                    .forEach(this.functionSet::add);
+
         }
         numOfSuperVirtualFunction = numOfVirtualFunction();
     }

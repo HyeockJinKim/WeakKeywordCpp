@@ -26,4 +26,8 @@ public class CppMember implements Serializable {
         this.content = "    " + Info.getText(content) + "\n";
     }
 
+    public void setContent(String content) {
+        this.content = content;
+    }
+
 }
