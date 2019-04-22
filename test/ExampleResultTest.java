@@ -15,9 +15,9 @@ public class ExampleResultTest {
     private static final String infoPath = Paths.get(rootPath, "test_out", "info").toString();
 
     private static String getExpectedFilePath(String filePath) {
-        return filePath.replace("test_out/", "")
-                .replace(".h", "-expected.h")
-                .replace(".cpp", "-expected.cpp");
+        return filePath.replace(".c", "-expected.c")
+                .replace(".md", "-expected.md")
+                .replace(".h", "-expected.h");
     }
 
     private void TestResult(String filename) {
@@ -27,10 +27,11 @@ public class ExampleResultTest {
             try {
                 File file = new File(Paths.get(outPath, filename).toString());
                 List<String> actual = Files.readAllLines(file.toPath());
-                List<String> expected = Files.readAllLines(Paths.get(getExpectedFilePath(file.toString())));
+                List<String> expected = Files.readAllLines(Paths.get(getExpectedFilePath(filePath)));
 
                 assertEquals(expected, actual);
             } catch (Exception e) {
+                e.printStackTrace();
                 fail();
             }
         } catch (Exception e) {

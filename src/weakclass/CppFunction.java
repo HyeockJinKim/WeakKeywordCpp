@@ -52,6 +52,12 @@ public class CppFunction extends CppMember {
         return this.name.equals(name) && this.parameters.equals(params);
     }
 
+    public static CppFunction makeConstructor(String className, CppFunction cppFunction) {
+        CppFunction constructor = new CppFunction(cppFunction.accessSpecifier);
+//        constructor.setContent();
+        return constructor;
+    }
+
     public void setParameters(ArrayList<String> parameters) {
         this.parameters = parameters;
     }
@@ -69,12 +75,20 @@ public class CppFunction extends CppMember {
         isVirtual = true;
     }
 
+    public boolean isConstructor() {
+        return isConstructor;
+    }
+
     public boolean isVirtual() {
         return isVirtual;
     }
 
     public boolean isPrivate() {
         return accessSpecifier == CppAccessSpecifier.PRIVATE;
+    }
+
+    public boolean isNoPrivate() {
+        return accessSpecifier == CppAccessSpecifier.PUBLIC || accessSpecifier == CppAccessSpecifier.PROTECTED;
     }
 
     boolean isNoStatic() {

@@ -24,11 +24,13 @@ public class IO {
     }
 
     public static void copyFile(String filePath) {
-        filePath = addBasePath(getRelativePath(filePath));
+        filePath = getAbsolutePath(filePath);
         String outPath = getOutPath(filePath);
-        if (!new File(filePath).exists() || new File(outPath).exists())
-            return ;
 
+        if (!new File(filePath).exists() || new File(outPath).exists()) {
+            System.out.println("Path error!!");
+            return;
+        }
         makeDictionaries(outPath);
         try {
             Files.copy(new File(filePath).toPath(), new File(outPath).toPath());
@@ -84,7 +86,7 @@ public class IO {
                 .replace(".hpp", ".hinfo");
     }
 
-    public static String getRelativePath(String filePath) {
+    public static String getAbsolutePath(String filePath) {
         return new File(filePath).getAbsolutePath()
                 .replace(IO.baseDir, "")
                 .replace("/./", "/");
