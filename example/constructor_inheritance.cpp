@@ -12,6 +12,7 @@ public:
 };
 
 class B : public A {
+
 public:
     B(int a, A * b) : A(a, b) {
         std::cout << a << std::endl;

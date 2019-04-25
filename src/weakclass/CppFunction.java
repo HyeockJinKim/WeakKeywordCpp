@@ -113,6 +113,7 @@ public class CppFunction extends CppMember {
                     .append(") {}\n");
         }
         constructor.setContent(sb.toString());
+
         return constructor;
     }
 

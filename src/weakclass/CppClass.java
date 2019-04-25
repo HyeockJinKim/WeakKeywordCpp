@@ -87,6 +87,7 @@ public class CppClass extends CppNamespace {
                     .filter(CppFunction::isConstructor)
                     .map(x -> CppFunction.makeConstructor(name, x))
                     .forEach(this.constructorSet::add);
+
         }
         numOfSuperVirtualFunction = numOfVirtualFunction();
     }
