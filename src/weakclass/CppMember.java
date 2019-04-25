@@ -1,7 +1,7 @@
 package weakclass;
 
 import checker.util.Info;
-import org.antlr.v4.runtime.ParserRuleContext;
+import grammar.antlr.CPP14Parser;
 
 import java.io.Serializable;
 
@@ -9,7 +9,7 @@ public class CppMember implements Serializable {
     CppAccessSpecifier accessSpecifier;
     String content;
 
-    public CppMember(CppAccessSpecifier accessSpecifier) {
+    CppMember(CppAccessSpecifier accessSpecifier) {
         this.accessSpecifier = accessSpecifier;
         this.content = null;
     }
@@ -22,7 +22,7 @@ public class CppMember implements Serializable {
         return content;
     }
 
-    public void setContent(ParserRuleContext content) {
+    public void setContent(CPP14Parser.MemberdeclarationContext content) {
         this.content = "    " + Info.getText(content) + "\n";
     }
 

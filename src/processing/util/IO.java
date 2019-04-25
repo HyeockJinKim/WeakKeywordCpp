@@ -27,8 +27,12 @@ public class IO {
         filePath = getAbsolutePath(filePath);
         String outPath = getOutPath(filePath);
 
-        if (!new File(filePath).exists() || new File(outPath).exists()) {
-            System.out.println("Path error!!");
+        if (!new File(filePath).exists()) {
+            System.out.println("Path error!! : " + filePath);
+            return;
+        }
+        if (new File(outPath).exists()) {
+            System.out.println("File already exists." + filePath);
             return;
         }
         makeDictionaries(outPath);

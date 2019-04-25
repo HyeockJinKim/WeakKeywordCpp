@@ -145,7 +145,6 @@ public class ReadFile {
     /**
      * Check this file is .cc file and convert it
      * @param file File for checking
-     * @throws IOException No file input
      */
     private static void checkCCFile(File file) {
         System.out.println(file);

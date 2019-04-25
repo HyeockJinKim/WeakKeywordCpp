@@ -41,7 +41,8 @@ public class ClassInfoVisitor<T> extends CommonVisitor<Void> {
             Rewrite.reWriteClass(reWriter, ctx, currentClass, namespace);
             currentClass.clearMemberSet();
             classSet.add(currentClass);
-        } catch (NullPointerException ignored) {
+        } catch (NullPointerException exception) {
+            exception.printStackTrace();
         }
     }
 

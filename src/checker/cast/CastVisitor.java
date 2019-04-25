@@ -37,6 +37,7 @@ public class CastVisitor<T> extends CommonVisitor<Void> {
     @Override
     public Void visitIdexpression(CPP14Parser.IdexpressionContext ctx) {
         if (ctx.Limited() != null) {
+            System.out.println("JK");
             reWriter.replace(ctx.start, "");
             classSet.stream()
                     .filter(x -> x.getFullName().equals(ctx.idexpression().getText()))

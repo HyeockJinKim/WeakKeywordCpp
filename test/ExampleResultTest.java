@@ -56,6 +56,11 @@ public class ExampleResultTest {
     }
 
     @Test
+    void TestConstructorInheritanceResult() {
+        TestResult("constructor_inheritance.cpp");
+    }
+
+    @Test
     void TestConstructorParameterResult() {
         TestResult("constructor_parameter.cpp");
     }

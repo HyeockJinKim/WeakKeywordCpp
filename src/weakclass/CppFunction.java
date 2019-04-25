@@ -1,25 +1,30 @@
 package weakclass;
 
-import checker.util.Info;
+import grammar.antlr.CPP14Parser;
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 public class CppFunction extends CppMember {
     private String className;
     private ArrayList<String> parameters;
+    private ArrayList<String> paramNames;
     private String name;
 
     private boolean isConstructor;
     private boolean isDestructor;
     private boolean isVirtual;
+    private transient CPP14Parser.MeminitializeridContext memInitializer;
+    private transient CPP14Parser.MemberdeclarationContext memberDeclaration;
 
     public CppFunction(CppAccessSpecifier accessSpecifier) {
         super(accessSpecifier);
         this.name = "";
         this.parameters = new ArrayList<>();
+        this.paramNames = new ArrayList<>();
         this.content = null;
+        this.memInitializer = null;
+        this.memberDeclaration = null;
     }
 
 
@@ -44,6 +49,43 @@ public class CppFunction extends CppMember {
         return name;
     }
 
+    public String getParams() {
+        StringBuilder sb = new StringBuilder("(");
+        int len = parameters.size()-1;
+        System.out.println(parameters);
+        System.out.println(paramNames);
+        for (int i = 0; i < len; ++i) {
+            sb.append(parameters.get(i))
+                    .append(" ")
+                    .append(paramNames.get(i))
+                    .append(", ");
+        }
+        sb.append(parameters.get(len))
+                .append(" ")
+                .append(paramNames.get(len))
+                .append(")");
+        return sb.toString();
+    }
+
+
+    @Override
+    public void setContent(CPP14Parser.MemberdeclarationContext content) {
+        super.setContent(content);
+        this.memberDeclaration = content;
+    }
+
+    public CPP14Parser.MemberdeclarationContext getMemberDeclaration() {
+        return this.memberDeclaration;
+    }
+
+    public void setMemInitializer(CPP14Parser.MeminitializeridContext memInitializer) {
+        this.memInitializer = memInitializer;
+    }
+
+    public CPP14Parser.MeminitializeridContext getMemInitializer() {
+        return memInitializer;
+    }
+
     public ArrayList<String> getParameters() {
         return parameters;
     }
@@ -52,14 +94,32 @@ public class CppFunction extends CppMember {
         return this.name.equals(name) && this.parameters.equals(params);
     }
 
-    public static CppFunction makeConstructor(String className, CppFunction cppFunction) {
+    static CppFunction makeConstructor(String className, CppFunction cppFunction) {
         CppFunction constructor = new CppFunction(cppFunction.accessSpecifier);
-//        constructor.setContent();
+        StringBuilder sb = new StringBuilder();
+        sb.append("    _")
+                .append(className)
+                .append(cppFunction.getParams())
+                .append(" : ")
+                .append(cppFunction.name)
+                .append("(");
+        int len = cppFunction.paramNames.size()-1;
+        for (int i = 0; i < len; ++i) {
+            sb.append(cppFunction.paramNames.get(i))
+                    .append(", ");
+        }
+        sb.append(cppFunction.paramNames.get(len))
+                .append(") {}\n");
+        constructor.setContent(sb.toString());
         return constructor;
     }
 
     public void setParameters(ArrayList<String> parameters) {
         this.parameters = parameters;
+    }
+
+    public void setParamNames(ArrayList<String> paramNames) {
+        this.paramNames = paramNames;
     }
 
     @Override
@@ -98,7 +158,7 @@ public class CppFunction extends CppMember {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("function Name: ")
+        sb.append("memberDeclaration Name: ")
                 .append(name)
                 .append(" (");
         for (String param : parameters) {

@@ -22,6 +22,8 @@ public:
 };
 
 class B : public _B {
+    int b;
+
 private:
     bool isA;
     void go() {}
