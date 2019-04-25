@@ -33,8 +33,6 @@ public class ParamVisitor<T> extends CommonVisitor<ArrayList<String>> {
         String param = Info.getText(ctx);
         if (param.contains("*")) {
             int index = paramList.size()-1;
-            System.out.println(paramList);
-            System.out.println(paramNameList);
             paramList.add(index, paramList.remove(index)+Info.getStarOfString(param));
             param = param.replace("*", "");
         }

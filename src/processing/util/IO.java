@@ -26,7 +26,6 @@ public class IO {
     public static void copyFile(String filePath) {
         filePath = getAbsolutePath(filePath);
         String outPath = getOutPath(filePath);
-
         if (!new File(filePath).exists()) {
             System.out.println("Path error!! : " + filePath);
             return;

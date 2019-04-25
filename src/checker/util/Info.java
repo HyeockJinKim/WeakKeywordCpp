@@ -87,10 +87,13 @@ public class Info {
         return sb.toString();
     }
 
-    public static String getClassNameOfFunction(String functionName) {
+    public static String getClassNameOfFunction(Stack<String> namespace, String functionName) {
+        StringBuilder sb = new StringBuilder();
         String[] names = functionName.split("::");
+        for (String name : namespace) {
+            sb.append(name).append("::");
+        }
         if (names.length > 1) {
-            StringBuilder sb = new StringBuilder();
             for (int i = 0; i < names.length - 2; ++i) {
                 sb.append(names[i]).append("::");
             }

@@ -52,18 +52,18 @@ public class CppFunction extends CppMember {
     public String getParams() {
         StringBuilder sb = new StringBuilder("(");
         int len = parameters.size()-1;
-        System.out.println(parameters);
-        System.out.println(paramNames);
         for (int i = 0; i < len; ++i) {
             sb.append(parameters.get(i))
                     .append(" ")
                     .append(paramNames.get(i))
                     .append(", ");
         }
-        sb.append(parameters.get(len))
-                .append(" ")
-                .append(paramNames.get(len))
-                .append(")");
+        if (len >= 0) {
+            sb.append(parameters.get(len))
+                    .append(" ")
+                    .append(paramNames.get(len))
+                    .append(")");
+        }
         return sb.toString();
     }
 
@@ -108,8 +108,10 @@ public class CppFunction extends CppMember {
             sb.append(cppFunction.paramNames.get(i))
                     .append(", ");
         }
-        sb.append(cppFunction.paramNames.get(len))
-                .append(") {}\n");
+        if (len >= 0) {
+            sb.append(cppFunction.paramNames.get(len))
+                    .append(") {}\n");
+        }
         constructor.setContent(sb.toString());
         return constructor;
     }
