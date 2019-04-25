@@ -83,21 +83,22 @@ public class Rewrite {
     }
 
     private static void reWriteBaseClassMember(CppClass currentClass, StringBuilder sb) {
-
-        Set<CppFunction> functionSet = currentClass.getFunctionSet(CppAccessSpecifier.PRIVATE);
-        Set<CppMember> memberSet = currentClass.getMemberSet(CppAccessSpecifier.PRIVATE);
-        Set<CppFunction> virtualSet = currentClass.getVirtualFunctionSet(CppAccessSpecifier.PRIVATE);
-
-        if (!functionSet.isEmpty() || !memberSet.isEmpty()) {
-            sb.append(CppAccessSpecifier.PRIVATE.getName());
-            reWriteMember(memberSet, functionSet, sb);
-            virtualSet.stream()
-                    .map(CppFunction::getContent)
-                    .forEach(sb::append);
+        for (CppAccessSpecifier cppAccessSpecifier : CppAccessSpecifier.privates()) {
+            Set<CppFunction> functionSet = currentClass.getFunctionSet(cppAccessSpecifier);
+            Set<CppMember> memberSet = currentClass.getMemberSet(cppAccessSpecifier);
+            Set<CppFunction> virtualSet = currentClass.getVirtualFunctionSet(cppAccessSpecifier);
+            if (!functionSet.isEmpty() || !memberSet.isEmpty()) {
+                sb.append(cppAccessSpecifier.getName());
+                reWriteMember(memberSet, functionSet, sb);
+                virtualSet.stream()
+                        .map(CppFunction::getContent)
+                        .forEach(sb::append);
+            }
         }
 
+
         for (CppAccessSpecifier cppAccessSpecifier : CppAccessSpecifier.nonPrivate()) {
-            virtualSet = currentClass.getVirtualFunctionSet(cppAccessSpecifier);
+            Set<CppFunction> virtualSet = currentClass.getVirtualFunctionSet(cppAccessSpecifier);
             if (!virtualSet.isEmpty()) {
                 sb.append(cppAccessSpecifier.getName());
 
@@ -119,17 +120,31 @@ public class Rewrite {
                 .forEach(sb::append);
     }
 
+    private static String reWriteMemInitializer(TokenStreamRewriter reWriter, CPP14Parser.MemberdeclarationContext memberDeclaration,
+                                               CPP14Parser.MeminitializeridContext memInitializer, String className) {
+        reWriter.replace(memInitializer.start, memInitializer.stop, "_"+className);
+        return "    " + reWriter.getText(memberDeclaration.getSourceInterval())+"\n";
+    }
+
     public static void reWriteClass(TokenStreamRewriter reWriter, CPP14Parser.ClassspecifierContext ctx, CppClass currentClass, Stack<String> namespaceStack) {
         if (ctx != null) {
             if (ctx.classhead() != null) {
                 if (currentClass.isWeak()) {
+
+                    currentClass.makeConstructor();
+                    currentClass.linkConstructor().forEach(x -> {
+                        String content = Rewrite.reWriteMemInitializer(reWriter, x.getMemberDeclaration(), x.getMemInitializer(), currentClass.getName());
+                        x.setContent(content);
+                    });
                     StringBuilder nameString = new StringBuilder();
                     for (String s : namespaceStack) {
-                        nameString.append(s).append("::");
+                        nameString.append(s)
+                                .append("::");
                     }
                     String name = " "+currentClass.getNamespace().replace(nameString.toString(), "");
                     StringBuilder tempClass = new StringBuilder();
                     reWriteTempClassHead(tempClass, ctx, currentClass, name);
+
                     reWriteTempClassMember(currentClass, tempClass);
 
                     reWriteBaseClassHead(tempClass, ctx, name);

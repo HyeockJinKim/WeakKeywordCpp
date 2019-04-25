@@ -2,9 +2,11 @@ package weakclass;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CppClass extends CppNamespace {
     private HashSet<CppFunction> functionSet;
+    private HashSet<CppFunction> constructorSet;
     private HashSet<CppMember> memberSet;
     private HashSet<CppClass> superSet;
     private long numOfSuperVirtualFunction;
@@ -12,6 +14,7 @@ public class CppClass extends CppNamespace {
     public CppClass(String className) {
         super(className);
         this.functionSet = new HashSet<>();
+        this.constructorSet = new HashSet<>();
         this.memberSet = new HashSet<>();
         this.superSet = new HashSet<>();
         this.numOfSuperVirtualFunction = 0;
@@ -20,6 +23,7 @@ public class CppClass extends CppNamespace {
     public CppClass(String className, Stack<String> namespace) {
         super(className, namespace);
         this.functionSet = new HashSet<>();
+        this.constructorSet = new HashSet<>();
         this.memberSet = new HashSet<>();
         this.superSet = new HashSet<>();
     }
@@ -27,6 +31,7 @@ public class CppClass extends CppNamespace {
     public CppClass(String className, String namespace) {
         super(className, namespace);
         this.functionSet = new HashSet<>();
+        this.constructorSet = new HashSet<>();
         this.memberSet = new HashSet<>();
         this.superSet = new HashSet<>();
     }
@@ -34,6 +39,7 @@ public class CppClass extends CppNamespace {
     public String getTempClassName() {
         return namespace.toString()+"_"+this.name;
     }
+
     public void addSuperSet(CppClass superClass) {
         superSet.add(superClass);
     }
@@ -41,6 +47,7 @@ public class CppClass extends CppNamespace {
     public void clearMemberSet() {
         memberSet = null;
     }
+
     public Set<CppFunction> getFunctionSet(CppAccessSpecifier accessSpecifier) {
         return functionSet.stream()
                 .filter(x -> x.accessSpecifier.equals(accessSpecifier))
@@ -74,15 +81,18 @@ public class CppClass extends CppNamespace {
                     .filter(CppFunction::isVirtual)
                     .forEach(this.functionSet::add);
 
-//            cppClass.functionSet.stream()
-//                    .filter(x -> !x.isVirtual())
-//                    .filter(CppFunction::isNoPrivate)
-//                    .filter(CppFunction::isConstructor)
-//                    .map(x -> CppFunction.makeConstructor(name, x))
-//                    .forEach(this.functionSet::add);
-
+            cppClass.functionSet.stream()
+                    .filter(x -> !x.isVirtual())
+                    .filter(CppFunction::isNoPrivate)
+                    .filter(CppFunction::isConstructor)
+                    .map(x -> CppFunction.makeConstructor(name, x))
+                    .forEach(this.constructorSet::add);
         }
         numOfSuperVirtualFunction = numOfVirtualFunction();
+    }
+
+    public void makeConstructor() {
+        functionSet.addAll(constructorSet);
     }
 
     public Optional<CppFunction> findFunction(String functionName, ArrayList<String> params) {
@@ -148,6 +158,13 @@ public class CppClass extends CppNamespace {
                 .forEach(x -> sb.append(x.toString()));
         sb.append("\n");
         return sb.toString();
+    }
+
+    public Stream<CppFunction> linkConstructor() {
+        return functionSet.stream()
+                .filter(CppFunction::isConstructor)
+                .filter(x -> !x.isVirtual())
+                .filter(x -> x.getMemInitializer() != null);
     }
 
     @Override

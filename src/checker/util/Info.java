@@ -19,13 +19,19 @@ public class Info {
     private Info() {
     }
 
-    public static Stack<String> checkUsingNamespace(Map<String, String> usingMap, String namespace) {
-        return null;
-    }
-
     public static void checkClass(TokenStreamRewriter reWriter, HashSet<CppClass> classSet, CPP14Parser.ClassspecifierContext ctx) {
         ClassInfoVisitor visitor = new ClassInfoVisitor(reWriter, classSet);
         visitor.visitClassspecifier(ctx);
+    }
+
+    public static String getStarOfString(String string) {
+        char[] chars = string.toCharArray();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < chars.length; ++i) {
+            if (chars[i] =='*')
+                sb.append("*");
+        }
+        return sb.toString();
     }
 
     public static String getFullName(Stack<String> namespace, String name) {

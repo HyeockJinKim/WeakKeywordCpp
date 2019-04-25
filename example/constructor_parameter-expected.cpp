@@ -188,11 +188,12 @@ protected:
                     StoreOrigin store_origin);
 
 public:
+    _StoreIC(Isolate*  isolate, Handle<FeedbackVector> vector, FeedbackSlot slot, FeedbackSlotKind kind) : IC( isolate, vector, slot, kind) {}
+    bool LookupForWrite(LookupIterator* it, Handle<Object> value,
+                      StoreOrigin store_origin);
     V8_WARN_UNUSED_RESULT MaybeHandle<Object> Store(
       Handle<Object> object, Handle<Name> name, Handle<Object> value,
       StoreOrigin store_origin = StoreOrigin::kNamed);
-    bool LookupForWrite(LookupIterator* it, Handle<Object> value,
-                      StoreOrigin store_origin);
 };
 
 class StoreIC : public _StoreIC {
@@ -208,7 +209,7 @@ protected:
 public:
     StoreIC(Isolate* isolate, Handle<FeedbackVector> vector, FeedbackSlot slot,
           FeedbackSlotKind kind)
-      : IC(isolate, vector, slot, kind) {
+      : _StoreIC(isolate, vector, slot, kind) {
     DCHECK(IsAnyStore());
   }
 };

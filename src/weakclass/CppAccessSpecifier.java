@@ -6,7 +6,8 @@ public enum CppAccessSpecifier implements Serializable {
     DEFAULT("\n"), PRIVATE("\nprivate:\n"), PROTECTED("\nprotected:\n"), PUBLIC("\npublic:\n");
 
     private final String name;
-    private static final CppAccessSpecifier[] nonPrivates = new CppAccessSpecifier[]{DEFAULT, PROTECTED, PUBLIC};
+    private static final CppAccessSpecifier[] nonPrivates = new CppAccessSpecifier[]{PROTECTED, PUBLIC};
+    private static final CppAccessSpecifier[] privates = new CppAccessSpecifier[]{DEFAULT, PRIVATE};
 
     CppAccessSpecifier(String name) {
         this.name = name;
@@ -18,6 +19,10 @@ public enum CppAccessSpecifier implements Serializable {
 
     public static CppAccessSpecifier[] nonPrivate() {
         return nonPrivates;
+    }
+
+    public static CppAccessSpecifier[] privates() {
+        return privates;
     }
 
     public static CppAccessSpecifier getEnum(String name) {
