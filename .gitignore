@@ -1,0 +1,7 @@
+.idea/*
+out/*
+out_folder/*
+test_out/*
+.DS_Store
+*.eml
+*.userlibraries
