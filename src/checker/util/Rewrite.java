@@ -14,10 +14,6 @@ import java.util.Stack;
 public class Rewrite {
     private static Rewrite ourInstance = new Rewrite();
 
-    public static Rewrite getInstance() {
-        return ourInstance;
-    }
-
     private Rewrite() {}
 
     /**
@@ -95,7 +91,6 @@ public class Rewrite {
                         .forEach(sb::append);
             }
         }
-
 
         for (CppAccessSpecifier cppAccessSpecifier : CppAccessSpecifier.nonPrivate()) {
             Set<CppFunction> virtualSet = currentClass.getVirtualFunctionSet(cppAccessSpecifier);

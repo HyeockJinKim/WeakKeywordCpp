@@ -76,7 +76,7 @@ public class ExampleResultTest {
     }
 
     @Test
-    void TestDiamonResult() {
+    void TestDiamondResult() {
         TestResult("diamond.cpp");
     }
 
@@ -94,6 +94,11 @@ public class ExampleResultTest {
     @Test
     void TestExternalDefinitionBaseResult() {
         TestResult("external_definition_base.cpp");
+    }
+
+    @Test
+    void TestExternalPublicDefinitionBaseResult() {
+        TestResult("external_public_definition.cpp");
     }
 
     @Test

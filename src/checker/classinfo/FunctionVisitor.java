@@ -28,7 +28,7 @@ public class FunctionVisitor<T> extends CommonVisitor<Void> {
     @Override
     public Void visitDeclaratorid(CPP14Parser.DeclaratoridContext ctx) {
         String name = Info.getFunctionName(ctx);
-        String className = Info.getClassNameOfFunction(name);
+        String className = Info.getClassNameOfFunction(namespace, name);
         if (className != null) {
             functionName = Info.getFunctionNameOfFunction(name);
             classSet.stream()

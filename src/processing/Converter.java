@@ -32,16 +32,13 @@ public class Converter {
         Checker checker = new Checker(filePath);
         checker.checkFile();
         HashSet<CppClass> classSet = new HashSet<>(checker.getClassSet());
-        if (checker.isHasClass()) {
-            Optional<String> result = Parsing.parseClass(filePath, classSet);
-            result.ifPresentOrElse(x -> IO.rewriteCppFile(filePath, x),
-                    () -> IO.copyFile(filePath));
-        } else {
-            IO.copyFile(filePath);
-        }
+        Optional<String> result = Parsing.parseClass(filePath, classSet);
+        result.ifPresent(x -> IO.rewriteCppFile(filePath, x));
+
         IO.writeClassInfo(filePath, classSet);
+
         if (checker.isHasStaticCast()) {
-            Optional<String> result = Parsing.parseStaticCast(Paths.get(filePath).toString(), classSet);
+            result = Parsing.parseStaticCast(Paths.get(filePath).toString(), classSet);
             result.ifPresent(x -> IO.rewriteCppFile(filePath, x));
         }
 
