@@ -1,15 +1,26 @@
 class A {
 };
 
-class B : public A {
-public:
-    virtual void func();
+class _B : public A {
 private:
+    int c;
+    int e;
+    int b;
+    int d;
+    int a;
+    void f();
+    void func();
+};
+
+class B : public _B {
+private:
+    int c;
+    int e;
+    int b;
+    int d;
+    int a;
     void f();
 
-    int a;
-    int b;
-    int c;
-    int d;
-    int e;
+public:
+    virtual void func();
 };

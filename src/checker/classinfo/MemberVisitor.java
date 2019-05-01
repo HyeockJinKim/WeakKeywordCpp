@@ -17,7 +17,6 @@ public class MemberVisitor<T> extends CommonVisitor<HashSet<CppFunction>> {
     private CppFunction currentFunction;
     private HashSet<CppFunction> functionSet;
     private HashSet<CppMember> memberSet;
-
     private boolean isFunction;
 
     MemberVisitor() {
@@ -46,6 +45,7 @@ public class MemberVisitor<T> extends CommonVisitor<HashSet<CppFunction>> {
     @Override
     public HashSet<CppFunction> visitMemberdeclaration(CPP14Parser.MemberdeclarationContext ctx) {
         currentFunction.setContent(ctx);
+        isFunction = false;
         super.visitMemberdeclaration(ctx);
         if (!isFunction) {
             CppNonVirtual currentMember = new CppNonVirtual(currentAccessSpecifier);

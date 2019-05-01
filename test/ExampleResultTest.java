@@ -101,10 +101,10 @@ public class ExampleResultTest {
         TestResult("external_public_definition.cpp");
     }
 
-    @Test
-    void TestFeildResult() {
-        TestResult("field.cpp");
-    }
+//    @Test
+//    void TestFeildResult() {
+//        TestResult("field.cpp");
+//    }
 
     @Test
     void TestIncludeResult() {
