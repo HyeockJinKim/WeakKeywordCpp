@@ -16,6 +16,17 @@ public:
 };
 
 class _C : public A, public B {
+private:
+    void f() {
+        cout << "A" << endl;
+    }
+    void g() {
+        cout << "B" << endl;
+    }
+    void h() {
+        cout << "C";
+    }
+
 public:
     int c;
 };

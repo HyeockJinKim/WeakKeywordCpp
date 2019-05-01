@@ -102,8 +102,18 @@ public class ExampleResultTest {
     }
 
     @Test
+    void TestFeildResult() {
+        TestResult("field.cpp");
+    }
+
+    @Test
     void TestIncludeResult() {
         TestResult("include.cpp");
+    }
+
+    @Test
+    void TestIncludeExternalDefinitionResult() {
+        TestResult("include_external_definition.cpp");
     }
 
     @Test

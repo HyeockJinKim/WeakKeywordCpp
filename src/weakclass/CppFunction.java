@@ -149,7 +149,7 @@ public class CppFunction extends CppMember {
         return accessSpecifier == CppAccessSpecifier.PRIVATE;
     }
 
-    public boolean isNoPrivate() {
+    boolean isNoPrivate() {
         return accessSpecifier == CppAccessSpecifier.PUBLIC || accessSpecifier == CppAccessSpecifier.PROTECTED;
     }
 
@@ -157,6 +157,9 @@ public class CppFunction extends CppMember {
         return isVirtual || isConstructor || isDestructor;
     }
 
+    public boolean isOnlyVirtual() {
+        return isVirtual && !isConstructor && !isDestructor;
+    }
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

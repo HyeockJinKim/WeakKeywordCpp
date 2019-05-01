@@ -75,6 +75,12 @@ public class CppClass extends CppNamespace {
                 .collect(Collectors.toSet());
     }
 
+    public Set<CppFunction> getOnlyVirtualFunctionSet() {
+        return functionSet.stream()
+                .filter(CppFunction::isOnlyVirtual)
+                .collect(Collectors.toSet());
+    }
+
     public void inheritSuperVirtualFunction() {
         for (CppClass cppClass : superSet) {
             cppClass.functionSet.stream()
@@ -97,7 +103,6 @@ public class CppClass extends CppNamespace {
 
     public Optional<CppFunction> findFunction(String functionName, ArrayList<String> params) {
         return functionSet.stream()
-                .filter(x -> !x.isNoStatic())
                 .filter(x -> x.equals(functionName, params))
                 .findAny();
     }

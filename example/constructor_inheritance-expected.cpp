@@ -12,6 +12,10 @@ public:
 };
 
 class _B : public A {
+private:
+    void func() {
+    }
+
 public:
     _B(int a, A*  b) : A(a,  b) {}
 };

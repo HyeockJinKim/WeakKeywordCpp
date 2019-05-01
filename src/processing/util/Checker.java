@@ -74,7 +74,7 @@ public class Checker {
      * @param line Line in .cc file
      */
     private void checkClass(String line) {
-        if (line.contains("class")) {
+        if (line.contains("class") || line.contains("::")) {
             hasClass = true;
         }
     }

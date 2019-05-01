@@ -69,9 +69,8 @@ public class Info {
     public static String getTempClassNameOfFunction(String className) {
         String[] temp = className.split("::");
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < temp.length-2; ++i) {
+        for (int i = 0; i < temp.length-2; ++i)
             sb.append(temp[i]).append("::");
-        }
         sb.append("_").append(temp[temp.length-2]);
         sb.append("::").append(temp[temp.length-1]);
         return sb.toString();
@@ -87,12 +86,9 @@ public class Info {
         return sb.toString();
     }
 
-    public static String getClassNameOfFunction(Stack<String> namespace, String functionName) {
+    public static String getClassNameOfFunction(String functionName) {
         StringBuilder sb = new StringBuilder();
         String[] names = functionName.split("::");
-        for (String name : namespace) {
-            sb.append(name).append("::");
-        }
         if (names.length > 1) {
             for (int i = 0; i < names.length - 2; ++i) {
                 sb.append(names[i]).append("::");
@@ -114,28 +110,9 @@ public class Info {
         }
         return name;
     }
-//
-//    public static void getFunctionInfo(CPP14Parser.FunctiondefinitionContext ctx) {
-//
-//    }
-//
-//    private static void addFunctionInfo(CPP14Parser.FunctiondefinitionContext ctx) {
-//        if (currentClass != null) {
-//            if (isVirtual) { // superset의 virtual에 없을때만 추가
-//                if (currentClass.superSet.stream()
-//                        .noneMatch(x -> x.virtualFunctionSet.contains(currentFunction)))
-//                    currentClass.virtualFunctionSet.add(currentFunction);
-//            } else { //
-//                if (!getFunctionName(ctx).replace("~", "").equals(currentClass.className)) {
-//                    currentClass.functionMap.computeIfPresent(currentAccessSpecifier, (k,v) -> v).add(ctx);
-//                }
-//            }
-//        }
-//    }
 
-    public static String getFunctionName(ParserRuleContext ctx) {
-        return getText(ctx)
-                .split("[(]")[0];
+    public static String getFunctionName(String name) {
+        return name.split("[(]")[0];
     }
 
     public static String getTypeId(CPP14Parser.ThetypeidContext ctx) {

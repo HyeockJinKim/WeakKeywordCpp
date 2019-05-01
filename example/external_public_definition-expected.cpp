@@ -7,6 +7,10 @@ class _B : public A {
 private:
     int num;
     void g();
+    void f();
+
+protected:
+    void k();
 
 public:
     void func();
@@ -24,16 +28,17 @@ public:
 }
 
 namespace base{
-void _B::g() {
+void base::B::g() {
     std::cout << "B" << std::endl;
 }
-
-void B::g() {
-    std::cout << "B" << std::endl;
+void _B::k() {
 }
-
 void _B::func() {
     std::cout << "Hello World!" << std::endl;
+}
+
+void _B::f() {
+    std::cout << this->num << std::endl;
 }
 
 void B::f() {

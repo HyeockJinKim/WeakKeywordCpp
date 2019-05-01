@@ -182,6 +182,10 @@ class IC {
 class _StoreIC : public IC {
 private:
     MaybeObjectHandle ComputeHandler(LookupIterator* lookup);
+    Handle<Code> slow_stub() const {
+    // All StoreICs share the same slow stub.
+    return BUILTIN_CODE(isolate(), KeyedStoreIC_Slow);
+  }
 
 protected:
     void UpdateCaches(LookupIterator* lookup, Handle<Object> value,

@@ -4,7 +4,7 @@ import checker.CommonVisitor;
 import checker.util.Info;
 import checker.util.Rewrite;
 import grammar.antlr.CPP14Parser;
-import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.TokenStreamRewriter;
 import weakclass.CppClass;
 
@@ -13,9 +13,6 @@ import java.util.HashSet;
 
 public class FunctionVisitor<T> extends CommonVisitor<Void> {
     private HashSet<CppClass> classSet;
-    private ParserRuleContext context;
-    private CppClass currentClass;
-    private String functionName;
     private ArrayList<String> params;
 
     FunctionVisitor(TokenStreamRewriter reWriter, HashSet<CppClass> classSet) {
@@ -23,23 +20,6 @@ public class FunctionVisitor<T> extends CommonVisitor<Void> {
         this.reWriter = reWriter;
         this.classSet = classSet;
         this.params = new ArrayList<>();
-    }
-
-    @Override
-    public Void visitDeclaratorid(CPP14Parser.DeclaratoridContext ctx) {
-        String name = Info.getFunctionName(ctx);
-        String className = Info.getClassNameOfFunction(namespace, name);
-        if (className != null) {
-            functionName = Info.getFunctionNameOfFunction(name);
-            classSet.stream()
-                    .filter(x -> x.equals(className))
-                    .findAny()
-                    .ifPresent(x -> {
-                        currentClass = x;
-                        context = ctx;
-                    });
-        }
-        return null;
     }
 
     @Override
@@ -52,10 +32,24 @@ public class FunctionVisitor<T> extends CommonVisitor<Void> {
     @Override
     public Void visitFunctiondefinition(CPP14Parser.FunctiondefinitionContext ctx) {
         super.visitFunctiondefinition(ctx);
-        if (currentClass != null && currentClass.isWeak()) {
-            currentClass.findFunction(functionName, params)
-                    .ifPresent(x -> Rewrite.reWriteFunctionName(reWriter, context, ctx, x));
-        }
+        Token start = ctx.declarator().start;
+        Token stop = ctx.declarator().stop;
+
+        String functionFullName = Info.getText(ctx.declarator());
+        String className = Info.getClassNameOfFunction(functionFullName);
+        String classFullName = Info.getFullName(namespace, className);
+        String functionName = Info.getFunctionNameOfFunction(Info.getFunctionName(functionFullName));
+
+        classSet.stream()
+                .filter(x -> x.equals(classFullName))
+                .findAny()
+                .ifPresent(cls -> {
+                    if (cls.isWeak()) {
+                        cls.findFunction(functionName, params)
+                                .ifPresent(func -> Rewrite.reWriteFunctionName(reWriter, start, stop, func, ctx.stop, functionFullName, Info.getText(ctx)));
+                    }
+                });
+
         return null;
     }
 

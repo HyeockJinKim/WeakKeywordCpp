@@ -7,6 +7,8 @@ class B : public A {
 private:
     int num;
     void g();
+protected:
+    void k();
 public:
     void func();
     virtual void f();
@@ -15,10 +17,11 @@ public:
 }
 
 namespace base{
-void B::g() {
+void base::B::g() {
     std::cout << "B" << std::endl;
 }
-
+void B::k() {
+}
 void B::func() {
     std::cout << "Hello World!" << std::endl;
 }

@@ -65,7 +65,7 @@ public class MemberVisitor<T> extends CommonVisitor<HashSet<CppFunction>> {
 
     @Override
     public HashSet<CppFunction> visitParametersandqualifiers(CPP14Parser.ParametersandqualifiersContext ctx) {
-        String name = Info.getFunctionName(ctx.getParent());
+        String name = Info.getFunctionName(Info.getText(ctx.getParent()));
         ParamVisitor<ArrayList<String>> visitor = new ParamVisitor<>();
         ArrayList<String> paramList = visitor.visitParametersandqualifiers(ctx);
         ArrayList<String> paramNameList = visitor.getParamNameList();

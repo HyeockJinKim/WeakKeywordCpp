@@ -1,7 +1,10 @@
 #include <iostream>
 #include "base.h"
 
-class _C : public A {};
+class _C : public A {
+private:
+    void f() {}
+};
 
 class C : public _C {
 public:

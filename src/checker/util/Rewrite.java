@@ -1,7 +1,7 @@
 package checker.util;
 
 import grammar.antlr.CPP14Parser;
-import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.TokenStreamRewriter;
 import weakclass.CppAccessSpecifier;
 import weakclass.CppClass;
@@ -32,11 +32,12 @@ public class Rewrite {
      * In order to rewrite function, Use the following function.
      */
 
-    public static void reWriteFunctionName(TokenStreamRewriter reWriter, ParserRuleContext nameContext,  ParserRuleContext functionContext, CppFunction function) {
-        reWriter.replace(nameContext.start, nameContext.stop, Info.getTempClassNameOfFunction(Info.getText(nameContext)));
-        if (function.isPrivate()) {
-            reWriter.insertAfter(functionContext.stop, "\n\n");
-            reWriter.insertAfter(functionContext.stop, Info.getText(functionContext));
+    public static void reWriteFunctionName(TokenStreamRewriter reWriter, Token start, Token stop, CppFunction function,
+                                           Token fStop, String functionName, String functions) {
+        reWriter.replace(start, stop, Info.getTempClassNameOfFunction(functionName));
+        if (function.isPrivate() || function.isOnlyVirtual()) {
+            reWriter.insertAfter(fStop, "\n\n");
+            reWriter.insertAfter(fStop, functions);
         }
     }
 
@@ -62,6 +63,15 @@ public class Rewrite {
             if (!functionSet.isEmpty() || !memberSet.isEmpty()) {
                 sb.append(cppAccessSpecifier.getName());
                 reWriteMember(memberSet, functionSet, sb);
+            } else if (cppAccessSpecifier == CppAccessSpecifier.PRIVATE) {
+                sb.append(cppAccessSpecifier.getName());
+            }
+            if (cppAccessSpecifier == CppAccessSpecifier.PRIVATE) {
+                Set<CppFunction> virtualSet = currentClass.getOnlyVirtualFunctionSet();
+                virtualSet.stream()
+                        .map(CppFunction::getContent)
+                        .map(x -> x.replace("virtual ", ""))
+                        .forEach(sb::append);
             }
         }
         sb.append("};\n\n");

@@ -27,6 +27,7 @@ public class IO {
         filePath = getAbsolutePath(filePath);
         String outPath = getOutPath(filePath);
         if (!new File(filePath).exists()) {
+            System.out.println(baseDir);
             System.out.println("Path error!! : " + filePath);
             return;
         }
@@ -49,26 +50,36 @@ public class IO {
     public static void setLogDir(String log) {
         if (IO.log == null)
             IO.log = Paths.get(log).toAbsolutePath().toString().replace("/./", "/");
+        if (!IO.log.endsWith("/"))
+            IO.log += "/";
     }
 
     public static void setInfoDir(String info) {
         if (IO.info == null)
             IO.info = Paths.get(info).toAbsolutePath().toString().replace("/./", "/");
+        if (!IO.info.endsWith("/"))
+            IO.info += "/";
     }
 
     public static void setOutDir(String out) {
         if (IO.out == null)
             IO.out = Paths.get(out).toAbsolutePath().toString().replace("/./", "/");
+        if (!IO.out.endsWith("/"))
+            IO.out += "/";
     }
 
     public static void setBaseDir(String baseDir) {
         if (IO.baseDir == null)
             IO.baseDir = Paths.get(baseDir).toAbsolutePath().toString().replace("/./", "/");
+        if (!IO.baseDir.endsWith("/"))
+            IO.baseDir += "/";
     }
 
     public static void setDefaultDir(String baseDir) {
         if (IO.baseDir == null)
             IO.baseDir = baseDir;
+        if (!IO.baseDir.endsWith("/"))
+            IO.baseDir += "/";
         setInfoDir(Paths.get(baseDir,"info").toString());
         setOutDir(Paths.get(baseDir, "out_folder").toString());
     }
@@ -90,9 +101,14 @@ public class IO {
     }
 
     public static String getAbsolutePath(String filePath) {
-        return new File(filePath).getAbsolutePath()
+        String path = new File(filePath
                 .replace(IO.baseDir, "")
-                .replace("/./", "/");
+                .replace("/./", "/"))
+                .getPath();
+        if (path.startsWith("/"))
+            path = path.substring(1);
+
+        return IO.baseDir + path;
     }
 
     static String getOutPath(String filePath) {

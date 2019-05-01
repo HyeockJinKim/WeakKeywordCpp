@@ -11,6 +11,7 @@ class _B : public A {
 private:
     bool isA;
     void go() {}
+    void f() {}
 
 protected:
     int num(int a, int b) {

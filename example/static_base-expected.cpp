@@ -2,6 +2,9 @@ class A {
 };
 
 class _B : public A {
+private:
+    void f() {}
+
 public:
     void g() {}
     void h() {}
