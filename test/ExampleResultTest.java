@@ -102,9 +102,19 @@ public class ExampleResultTest {
     }
 
 //    @Test
-//    void TestFeildResult() {
+//    void TestFieldResult() {
 //        TestResult("field.cpp");
 //    }
+
+    @Test
+    void TestFriendResult() {
+        TestResult("friend.cpp");
+    }
+
+    @Test
+    void TestFunctionParameterResult() {
+        TestResult("function_parameter.cpp");
+    }
 
     @Test
     void TestIncludeResult() {

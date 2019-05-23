@@ -30,4 +30,7 @@ public class CppMember implements Serializable {
         this.content = content;
     }
 
+    public void addBeforeContent(String content) {
+        this.content = content + this.content;
+    }
 }

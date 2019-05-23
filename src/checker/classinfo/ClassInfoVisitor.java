@@ -59,7 +59,7 @@ public class ClassInfoVisitor<T> extends CommonVisitor<Void> {
 
     @Override
     public Void visitMemberspecification(CPP14Parser.MemberspecificationContext ctx) {
-        MemberVisitor<CppFunction> visitor = new MemberVisitor<>();
+        MemberVisitor<CppFunction> visitor = new MemberVisitor<>(reWriter);
         HashSet<CppFunction> memberFunctionSet = visitor.visitMemberspecification(ctx);
         for (CppFunction cppFunction : memberFunctionSet) {
             currentClass.updateFunction(cppFunction);

@@ -2,7 +2,9 @@ package checker.classinfo;
 
 import checker.CommonVisitor;
 import checker.util.Info;
+import checker.util.Rewrite;
 import grammar.antlr.CPP14Parser;
+import org.antlr.v4.runtime.TokenStreamRewriter;
 import org.antlr.v4.runtime.tree.ParseTree;
 import weakclass.CppAccessSpecifier;
 import weakclass.CppFunction;
@@ -18,11 +20,40 @@ public class MemberVisitor<T> extends CommonVisitor<HashSet<CppFunction>> {
     private HashSet<CppFunction> functionSet;
     private HashSet<CppMember> memberSet;
     private boolean isFunction;
+    private boolean isFriend;
+    private String friendClass;
 
-    MemberVisitor() {
+    MemberVisitor(TokenStreamRewriter reWriter) {
         this.currentAccessSpecifier = CppAccessSpecifier.DEFAULT;
         this.functionSet = new HashSet<>();
         this.memberSet = new HashSet<>();
+        this.reWriter = reWriter;
+        friendClass = "";
+    }
+
+    @Override
+    public HashSet<CppFunction> visitDeclspecifierseq(CPP14Parser.DeclspecifierseqContext ctx) {
+        if (ctx.declspecifier() != null) {
+            if (ctx.declspecifier().Friend() != null)
+                isFriend = true;
+        }
+
+        super.visitDeclspecifierseq(ctx);
+
+//        isFriend = false;
+//        friendClass = null;
+        return null;
+    }
+
+    @Override
+    public HashSet<CppFunction> visitElaboratedtypespecifier(CPP14Parser.ElaboratedtypespecifierContext ctx) {
+        if (ctx.classkey() != null) {
+            if (ctx.Identifier() != null) {
+                friendClass = "friend " + Info.getText(ctx.classkey()) + " _"+ ctx.Identifier().getText() + ";\n";
+            }
+        }
+
+        return super.visitElaboratedtypespecifier(ctx);
     }
 
     /**
@@ -50,6 +81,11 @@ public class MemberVisitor<T> extends CommonVisitor<HashSet<CppFunction>> {
         if (!isFunction) {
             CppNonVirtual currentMember = new CppNonVirtual(currentAccessSpecifier);
             currentMember.setContent(ctx);
+            if (isFriend) {
+                currentMember.addBeforeContent(friendClass);
+                reWriter.insertBefore(ctx.start, friendClass);
+            }
+
             memberSet.add(currentMember);
         }
 
