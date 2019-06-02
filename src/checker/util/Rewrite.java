@@ -41,6 +41,9 @@ public class Rewrite {
         }
     }
 
+    public static void rewriteMeminitializer(TokenStreamRewriter reWriter, Token start, Token stop, String functionName) {
+        reWriter.replace(start, stop, functionName);
+    }
 
     /**
      * In order to rewrite class, Use the following functions.

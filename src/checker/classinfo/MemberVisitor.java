@@ -33,15 +33,11 @@ public class MemberVisitor<T> extends CommonVisitor<HashSet<CppFunction>> {
 
     @Override
     public HashSet<CppFunction> visitDeclspecifierseq(CPP14Parser.DeclspecifierseqContext ctx) {
-        if (ctx.declspecifier() != null) {
+        if (ctx.declspecifier() != null)
             if (ctx.declspecifier().Friend() != null)
                 isFriend = true;
-        }
 
         super.visitDeclspecifierseq(ctx);
-
-//        isFriend = false;
-//        friendClass = null;
         return null;
     }
 

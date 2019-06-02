@@ -3,13 +3,18 @@ class A {
 
 class _B : public A {
 private:
-    DISALLOW(_B);
-    void func();
+    DISALLOW(B);
+    void func() {
+    a();
+    }
 };
 
 class B : public _B {
 private:
     DISALLOW(B);
+
 public:
-    virtual void func();
+    virtual void func() {
+    a();
+    }
 };

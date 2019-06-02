@@ -86,6 +86,11 @@ public class ExampleResultTest {
     }
 
     @Test
+    void TestExternalConstructorResult() {
+        TestResult("external_constructor.cpp");
+    }
+
+    @Test
     void TestExternalDefinitionResult() {
         TestResult("external_definition.cpp");
     }

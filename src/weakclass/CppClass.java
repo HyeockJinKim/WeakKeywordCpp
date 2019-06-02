@@ -61,6 +61,10 @@ public class CppClass extends CppNamespace {
                 .collect(Collectors.toSet());
     }
 
+    public Set<CppClass> getSuperSet() {
+        return superSet;
+    }
+
     public Set<CppFunction> getVirtualFunctionSet(CppAccessSpecifier accessSpecifier) {
         return functionSet.stream()
                 .filter(CppFunction::isNoStatic)

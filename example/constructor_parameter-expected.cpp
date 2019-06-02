@@ -181,6 +181,7 @@ class IC {
 
 class _StoreIC : public IC {
 private:
+friend class _IC;
     friend class IC;
     MaybeObjectHandle ComputeHandler(LookupIterator* lookup);
     Handle<Code> slow_stub() const {
@@ -203,6 +204,7 @@ public:
 
 class StoreIC : public _StoreIC {
 private:
+friend class _IC;
     friend class IC;
     MaybeObjectHandle ComputeHandler(LookupIterator* lookup);
 

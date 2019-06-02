@@ -24,6 +24,10 @@ void _B::f(int a, int b) {
     int c = a+b;
 }
 
+void B::f(int a, int b) {
+    int c = a+b;
+}
+
 int main() {
     A* a = new A;
     B* b = static_cast<_B*>(a);

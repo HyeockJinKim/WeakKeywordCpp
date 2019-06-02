@@ -27,7 +27,7 @@ public class IO {
         filePath = getAbsolutePath(filePath);
         String outPath = getOutPath(filePath);
         if (!new File(filePath).exists()) {
-            System.out.println(baseDir);
+            System.out.println("Base Directory: " + baseDir);
             System.out.println("Path error!! : " + filePath);
             return;
         }
@@ -102,13 +102,11 @@ public class IO {
 
     public static String getAbsolutePath(String filePath) {
         String path = new File(filePath
-                .replace(IO.baseDir, "")
-                .replace("/./", "/"))
+                .replace(IO.baseDir, "")).getAbsoluteFile()
                 .getPath();
-        if (path.startsWith("/"))
-            path = path.substring(1);
+        System.out.println(path);
 
-        return IO.baseDir + path;
+        return path.replace("/./", "/");
     }
 
     static String getOutPath(String filePath) {
